@@ -11,3 +11,6 @@ Enable Go Modules integration in IntelliJ IDEA.
 
 ## What's the Fyne?
 Fyne uses single binding to compile our app with existing graphics driver independent on Operation System.
+
+### Wrapper
+This is used to structure lay out 
