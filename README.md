@@ -13,4 +13,14 @@ Enable Go Modules integration in IntelliJ IDEA.
 Fyne uses single binding to compile our app with existing graphics driver independent on Operation System.
 
 ### Wrapper
-This is used to structure lay out 
+This is used to structure lay out
+
+## What's learn from this
+- [X] How to get widget
+- [ ] How to generate Image button (Toggle)
+- [ ] How to generate check box 
+- Button Event Listener 
+  - [ ] Batch Download
+  - [ ] Download one by one
+  - [ ] Setting download target path
+  - [ ] Open directory
