@@ -13,11 +13,12 @@ import (
 )
 
 type config struct {
-	EditWidget      *widget.Entry
-	PreviewWidget   *widget.RichText
-	CurrentFile     fyne.URI
-	SaveMenuItem    *fyne.MenuItem
-	ButtonContainer *fyne.Container
+	EditWidget    *widget.Entry
+	PreviewWidget *widget.RichText
+	CurrentFile   fyne.URI
+	SaveMenuItem  *fyne.MenuItem
+	ImageButtons  []*widget.Button
+	Container     *fyne.Container
 }
 
 var Config config
@@ -34,7 +35,10 @@ func (widgetConfig *config) MakeUI() (*widget.Entry, *widget.RichText) {
 	return edit, preview
 }
 
-func (widgetConfig *config) LoadImageButtons() (buttonContainer *fyne.Container) {
+func (widgetConfig *config) LoadImageButtons(win fyne.Window) (buttonContainer *fyne.Container) {
+	pathLabel := widget.NewLabel("Download Path")
+	downloadDirPathBtn := widget.NewButton("Select path", widgetConfig.setDirectory(win, pathLabel))
+
 	// Load the icon image from a file
 	nodeIcon, err := fyne.LoadResourceFromPath("assets/nodejs_logo.svg")
 	if err != nil {
@@ -56,21 +60,10 @@ func (widgetConfig *config) LoadImageButtons() (buttonContainer *fyne.Container)
 		log.Printf("Error to retrieve %s svg\n", dockerIcon.Name())
 	}
 
-	nodeImgBtn := widget.NewButtonWithIcon("Node.js", nodeIcon, func() {
-		log.Printf("%s 실행\n", nodeIcon.Name())
-	})
-
-	goImgBtn := widget.NewButtonWithIcon("Go", golangIcon, func() {
-		log.Printf("%s 실행\n", golangIcon.Name())
-	})
-
-	notionImgBtn := widget.NewButtonWithIcon("Notion", notionIcon, func() {
-		log.Printf("%s 실행\n", notionIcon.Name())
-	})
-
-	dockerImgBtn := widget.NewButtonWithIcon("Docker", dockerIcon, func() {
-		log.Printf("%s 실행\n", dockerIcon.Name())
-	})
+	nodeImgBtn := widget.NewButtonWithIcon("Node.js", nodeIcon, func() {})
+	goImgBtn := widget.NewButtonWithIcon("Go", golangIcon, func() {})
+	notionImgBtn := widget.NewButtonWithIcon("Notion", notionIcon, func() {})
+	dockerImgBtn := widget.NewButtonWithIcon("Docker", dockerIcon, func() {})
 
 	var iconSize = fyne.Size{Width: 640, Height: 480}
 
@@ -85,12 +78,44 @@ func (widgetConfig *config) LoadImageButtons() (buttonContainer *fyne.Container)
 		notionImgBtn,
 		dockerImgBtn,
 	)
-	widgetConfig.ButtonContainer = buttonsContainer
 
-	return widgetConfig.ButtonContainer
+	vboxContainer := container.NewVBox(
+		layout.NewSpacer(),
+		container.NewHBox(downloadDirPathBtn, pathLabel),
+		layout.NewSpacer(),
+		buttonsContainer,
+		layout.NewSpacer(),
+	)
+
+	widgetConfig.ImageButtons = []*widget.Button{
+		nodeImgBtn, goImgBtn, notionImgBtn, dockerImgBtn,
+	}
+
+	widgetConfig.initEventListener()
+
+	widgetConfig.Container = vboxContainer
+
+	return widgetConfig.Container
 }
 
 var fileExtensionFilter = storage.NewExtensionFileFilter([]string{".md", ".MD"})
+
+func (widgetConfig *config) initEventListener() {
+	for _, imgbtn := range widgetConfig.ImageButtons {
+		addEventListener(imgbtn)
+	}
+}
+
+func addEventListener(button *widget.Button) {
+	button.OnTapped = func() {
+		log.Printf("%s 실행\n", button.Icon.Name())
+		if button.Disabled() {
+			button.Enable()
+		} else {
+			button.Disable()
+		}
+	}
+}
 
 func (widgetConfig *config) CreateMenuItems(win fyne.Window) {
 	openMenuItem := fyne.NewMenuItem("Open ...", widgetConfig.openFunc(win))
@@ -205,5 +230,19 @@ func (widgetConfig *config) openFunc(win fyne.Window) func() {
 		// Only markdown files are shown and open.
 		openDialog.SetFilter(fileExtensionFilter)
 		openDialog.Show()
+	}
+}
+
+func (widgetConfig *config) setDirectory(win fyne.Window, pathLabel *widget.Label) func() {
+	return func() {
+		dialog.ShowFolderOpen(func(uri fyne.ListableURI, err error) {
+			if err != nil {
+				dialog.ShowError(err, win)
+				return
+			}
+			if uri != nil {
+				pathLabel.SetText(uri.Path())
+			}
+		}, win)
 	}
 }

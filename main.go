@@ -3,7 +3,6 @@ package main
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"fyne.io/fyne/v2/container"
 	"github.com/milkcoke/fyne-app/src/markdown"
 )
 
@@ -18,18 +17,18 @@ func main() {
 
 	//get the user interface
 	// 공유 Config 는 무조건 하나의 값일까?
-	edit, preview := markdown.Config.MakeUI()
+	//edit, preview := markdown.Config.MakeUI()
 	//imgBtn := markdown.Config.LoadImageButtons()
 
 	markdown.Config.CreateMenuItems(win)
-	var buttonContainer = markdown.Config.LoadImageButtons()
+	var container = markdown.Config.LoadImageButtons(win)
 
 	// set the content of the window
 	// Split two widgets
-	win.SetContent(container.NewHSplit(edit, preview))
+	//win.SetContent(container.NewHSplit(edit, preview))
 
 	// set container
-	win.SetContent(buttonContainer)
+	win.SetContent(container)
 
 	// show window and run app
 	win.Resize(fyne.Size{Width: 800, Height: 500})
