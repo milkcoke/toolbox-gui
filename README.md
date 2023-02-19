@@ -48,3 +48,11 @@ $ fyne package --appVersion [version] -name [app-name] -icon [app-icon-path] -re
 ### Register application
 You need give some money about $100 / year to Apple or Microsoft for supporting cross-platform \
 for signing your application assuring your app is secure.
+
+
+## Test
+I defined `Makefile` for integration testing.
+```bash
+# You can execute all test codes in this project.
+$ make test
+```
