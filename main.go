@@ -14,6 +14,8 @@ func main() {
 	// create a window for the app
 	win := app.NewWindow("Markdown")
 
+	app.Settings().SetTheme(&markdown.CustomTheme{})
+
 	//get the user interface
 	// 공유 Config 는 무조건 하나의 값일까?
 	edit, preview := markdown.Config.MakeUI()
