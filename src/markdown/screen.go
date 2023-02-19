@@ -2,18 +2,22 @@ package markdown
 
 import (
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
 	"io"
+	"log"
 	"strings"
 )
 
 type config struct {
-	EditWidget    *widget.Entry
-	PreviewWidget *widget.RichText
-	CurrentFile   fyne.URI
-	SaveMenuItem  *fyne.MenuItem
+	EditWidget      *widget.Entry
+	PreviewWidget   *widget.RichText
+	CurrentFile     fyne.URI
+	SaveMenuItem    *fyne.MenuItem
+	ButtonContainer *fyne.Container
 }
 
 var Config config
@@ -28,6 +32,62 @@ func (widgetConfig *config) MakeUI() (*widget.Entry, *widget.RichText) {
 	edit.OnChanged = preview.ParseMarkdown
 
 	return edit, preview
+}
+
+func (widgetConfig *config) LoadImageButtons() (buttonContainer *fyne.Container) {
+	// Load the icon image from a file
+	nodeIcon, err := fyne.LoadResourceFromPath("assets/nodejs_logo.svg")
+	if err != nil {
+		log.Printf("Error to retrieve %s svg\n", nodeIcon.Name())
+	}
+
+	golangIcon, err := fyne.LoadResourceFromPath("assets/go_logo_aqua.svg")
+	if err != nil {
+		log.Printf("Error to retrieve %s svg\n", golangIcon.Name())
+	}
+
+	notionIcon, err := fyne.LoadResourceFromPath("assets/notion.svg")
+	if err != nil {
+		log.Printf("Error to retrieve %s svg\n", notionIcon.Name())
+	}
+
+	dockerIcon, err := fyne.LoadResourceFromPath("assets/docker.svg")
+	if err != nil {
+		log.Printf("Error to retrieve %s svg\n", dockerIcon.Name())
+	}
+
+	nodeImgBtn := widget.NewButtonWithIcon("Node.js", nodeIcon, func() {
+		log.Printf("%s 실행\n", nodeIcon.Name())
+	})
+
+	goImgBtn := widget.NewButtonWithIcon("Go", golangIcon, func() {
+		log.Printf("%s 실행\n", golangIcon.Name())
+	})
+
+	notionImgBtn := widget.NewButtonWithIcon("Notion", notionIcon, func() {
+		log.Printf("%s 실행\n", notionIcon.Name())
+	})
+
+	dockerImgBtn := widget.NewButtonWithIcon("Docker", dockerIcon, func() {
+		log.Printf("%s 실행\n", dockerIcon.Name())
+	})
+
+	var iconSize = fyne.Size{Width: 640, Height: 480}
+
+	nodeImgBtn.Resize(iconSize)
+	goImgBtn.Resize(iconSize)
+	notionImgBtn.Resize(iconSize)
+	dockerImgBtn.Resize(iconSize)
+
+	buttonsContainer := container.New(layout.NewGridLayout(3),
+		nodeImgBtn,
+		goImgBtn,
+		notionImgBtn,
+		dockerImgBtn,
+	)
+	widgetConfig.ButtonContainer = buttonsContainer
+
+	return widgetConfig.ButtonContainer
 }
 
 var fileExtensionFilter = storage.NewExtensionFileFilter([]string{".md", ".MD"})

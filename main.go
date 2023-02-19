@@ -19,14 +19,20 @@ func main() {
 	//get the user interface
 	// 공유 Config 는 무조건 하나의 값일까?
 	edit, preview := markdown.Config.MakeUI()
+	//imgBtn := markdown.Config.LoadImageButtons()
+
 	markdown.Config.CreateMenuItems(win)
+	var buttonContainer = markdown.Config.LoadImageButtons()
 
 	// set the content of the window
 	// Split two widgets
 	win.SetContent(container.NewHSplit(edit, preview))
+
+	// set container
+	win.SetContent(buttonContainer)
+
 	// show window and run app
 	win.Resize(fyne.Size{Width: 800, Height: 500})
-	win.CenterOnScreen()
+	//win.CenterOnScreen()
 	win.ShowAndRun()
-
 }

@@ -26,6 +26,10 @@ This is used to structure lay out
   - [ ] Setting download target path
   - [ ] Open directory
 
+
+### Image Button
+Use material UI or Put canvas.text on top of some image.
+
 ### Packaging
 #### 1. Install fyne cmd
 ```bash
