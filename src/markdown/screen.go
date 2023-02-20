@@ -9,6 +9,8 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"io"
 	"log"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -16,12 +18,25 @@ type config struct {
 	EditWidget    *widget.Entry
 	PreviewWidget *widget.RichText
 	CurrentFile   fyne.URI
+	DownloadPath  string
 	SaveMenuItem  *fyne.MenuItem
 	ImageButtons  []*widget.Button
 	Container     *fyne.Container
 }
 
 var Config config
+
+func (widgetConfig *config) initDownloadDir(pathLabel *widget.Label) {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		log.Println("Error getting user home directory ", err)
+		return
+	}
+
+	downloadDir := filepath.Join(homeDir, "Downloads")
+	widgetConfig.DownloadPath = downloadDir
+	pathLabel.SetText(downloadDir)
+}
 
 func (widgetConfig *config) MakeUI() (*widget.Entry, *widget.RichText) {
 	edit := widget.NewMultiLineEntry()
@@ -37,6 +52,8 @@ func (widgetConfig *config) MakeUI() (*widget.Entry, *widget.RichText) {
 
 func (widgetConfig *config) LoadImageButtons(win fyne.Window) (buttonContainer *fyne.Container) {
 	pathLabel := widget.NewLabel("Download Path")
+	widgetConfig.initDownloadDir(pathLabel)
+
 	downloadDirPathBtn := widget.NewButton("Select path", widgetConfig.setDirectory(win, pathLabel))
 
 	// Load the icon image from a file
@@ -242,6 +259,7 @@ func (widgetConfig *config) setDirectory(win fyne.Window, pathLabel *widget.Labe
 			}
 			if uri != nil {
 				pathLabel.SetText(uri.Path())
+				widgetConfig.DownloadPath = uri.Path()
 			}
 		}, win)
 	}

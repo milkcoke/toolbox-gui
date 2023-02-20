@@ -13,7 +13,9 @@ func main() {
 	// create a window for the app
 	win := app.NewWindow("Markdown")
 
-	app.Settings().SetTheme(&markdown.CustomTheme{})
+	// Generate another widget with progressBar
+	var progressBarApp = markdown.AppConfig{App: app}
+	progressBarApp.GenerateProgressBar()
 
 	//get the user interface
 	// 공유 Config 는 무조건 하나의 값일까?
@@ -21,7 +23,8 @@ func main() {
 	//imgBtn := markdown.Config.LoadImageButtons()
 
 	markdown.Config.CreateMenuItems(win)
-	var container = markdown.Config.LoadImageButtons(win)
+	markdown.Config.LoadImageButtons(win)
+	var container = markdown.Config.GenerateAnimation()
 
 	// set the content of the window
 	// Split two widgets
