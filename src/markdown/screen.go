@@ -2,11 +2,13 @@ package markdown
 
 import (
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/storage"
 	"fyne.io/fyne/v2/widget"
+	"image/color"
 	"io"
 	"log"
 	"os"
@@ -89,19 +91,30 @@ func (widgetConfig *config) LoadImageButtons(win fyne.Window) (buttonContainer *
 	notionImgBtn.Resize(iconSize)
 	dockerImgBtn.Resize(iconSize)
 
+	nodeProgress := widget.NewProgressBar()
+	goProgress := widget.NewProgressBar()
+	notionProgress := widget.NewProgressBar()
+	dockerProgress := widget.NewProgressBar()
+
+	// 여기서 앱을 불러와서 New Window 를 띄워야함.
 	buttonsContainer := container.New(layout.NewGridLayout(3),
-		nodeImgBtn,
-		goImgBtn,
-		notionImgBtn,
-		dockerImgBtn,
+		container.NewVBox(nodeImgBtn, nodeProgress),
+		container.NewVBox(goImgBtn, goProgress),
+		container.NewVBox(notionImgBtn, notionProgress),
+		container.NewVBox(dockerImgBtn, dockerProgress),
 	)
 
+	var space = layout.NewSpacer()
+	space.Resize(fyne.Size{Width: 320, Height: 50})
+
 	vboxContainer := container.NewVBox(
-		layout.NewSpacer(),
-		container.NewHBox(downloadDirPathBtn, pathLabel),
-		layout.NewSpacer(),
-		buttonsContainer,
-		layout.NewSpacer(),
+		//space,
+		container.NewVBox(
+			container.NewHBox(downloadDirPathBtn, pathLabel),
+			container.NewBorder(canvas.NewLine(color.White), nil, nil, nil),
+			container.NewMax(buttonsContainer),
+		),
+		space,
 	)
 
 	widgetConfig.ImageButtons = []*widget.Button{
