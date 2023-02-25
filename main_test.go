@@ -3,7 +3,7 @@ package main
 import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/test"
-	markdown "github.com/milkcoke/fyne-app/src/markdown"
+	markdown "github.com/milkcoke/fyne-app/src/layout"
 	"testing"
 )
 
@@ -26,7 +26,7 @@ func Test_RunApp(t *testing.T) {
 	var testConfig = markdown.Config
 
 	testApp := test.NewApp()
-	testWindow := testApp.NewWindow("Test markdown")
+	testWindow := testApp.NewWindow("Test layout")
 
 	edit, preview := testConfig.MakeUI()
 	testConfig.CreateMenuItems(testWindow)

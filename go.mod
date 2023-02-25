@@ -1,6 +1,6 @@
-module github.com/milkcoke/fyne-app
+module github.com/milkcoke/auto-setup-gui
 
-go 1.19
+go 1.20
 
 require fyne.io/fyne/v2 v2.3.1
 
