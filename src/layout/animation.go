@@ -1,4 +1,4 @@
-package markdown
+package layout
 
 import (
 	"fyne.io/fyne/v2"
@@ -10,11 +10,11 @@ import (
 	"time"
 )
 
-type AppConfig struct {
+type AnimationApp struct {
 	App fyne.App
 }
 
-func (appConfig *AppConfig) GenerateProgressBar() {
+func (appConfig *AnimationApp) GenerateProgressBar() {
 	var app = appConfig.App
 
 	// 여기서부터
@@ -34,7 +34,7 @@ func (appConfig *AppConfig) GenerateProgressBar() {
 	app.Settings().SetTheme(&CustomTheme{})
 }
 
-func (widgetConfig *config) GenerateAnimation() (animationContainer *fyne.Container) {
+func (widgetConfig *AppConfig) GenerateAnimation() (animationContainer *fyne.Container) {
 	var iconSize = fyne.Size{Width: 640, Height: 480}
 	// Create the animation effect
 	animation := canvas.NewRectangle(color.White)
