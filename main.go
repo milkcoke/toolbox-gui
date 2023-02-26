@@ -14,7 +14,6 @@ func main() {
 	win := app.NewWindow("My-Installer")
 
 	var config = layout.Config
-	config(win)
 	var container = config.LoadImageButtons(win)
 
 	// show window and run app
