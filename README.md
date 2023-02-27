@@ -22,8 +22,8 @@ This is used to structure lay out
 - [X] How to package our application
 - Button Event Listener 
   - [ ] Batch Download
-  - [ ] Download one by one
-  - [ ] Setting download target path
+  - [X] Download one by one
+  - [X] Setting download target path
   - [ ] Open directory
 
 
