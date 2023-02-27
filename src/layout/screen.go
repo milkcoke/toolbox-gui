@@ -7,8 +7,11 @@ import (
 	"fyne.io/fyne/v2/dialog"
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
+	"github.com/imroc/req/v3"
+	"github.com/milkcoke/auto-setup-gui/src/app"
 	"image/color"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 )
