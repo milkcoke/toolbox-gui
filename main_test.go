@@ -1,42 +1,28 @@
 package main
 
 import (
-	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/test"
-	markdown "github.com/milkcoke/fyne-app/src/layout"
+	"github.com/milkcoke/auto-setup-gui/src/layout"
 	"testing"
 )
 
 // This is integration test
 
-func Test_makeUI(t *testing.T) {
-	var testConfig = markdown.Config
-
-	edit, preview := testConfig.MakeUI()
-
-	var txtMsg = "Falcon never can't die!"
-	test.Type(edit, txtMsg)
-
-	if preview.String() != txtMsg {
-		t.Error("Failed -- didn't find expected value in preview")
-	}
-}
-
-func Test_RunApp(t *testing.T) {
-	var testConfig = markdown.Config
-
+func Test_DownlaodNode(t *testing.T) {
 	testApp := test.NewApp()
-	testWindow := testApp.NewWindow("Test layout")
 
-	edit, preview := testConfig.MakeUI()
-	testConfig.CreateMenuItems(testWindow)
+	// create a window for the testApp
+	testWindow := testApp.NewWindow("Test-Installer")
 
-	testWindow.SetContent(container.NewHSplit(edit, preview))
+	var config = layout.Config
+	var container = config.LoadImageButtons(testWindow)
+
+	// show window and run testApp
+	testWindow.Resize(fyne.Size{Width: 800, Height: 480})
+
+	testWindow.SetContent(container)
+
 	testApp.Run()
-
-	var txtMsg = "Some test"
-	test.Type(edit, txtMsg)
-	if preview.String() != txtMsg {
-		t.Error("Failed to run app with correct text message.")
-	}
+	config.ImageButtons[0].Tapped(&fyne.PointEvent{Position: fyne.Position{X: 46, Y: 30}})
 }
