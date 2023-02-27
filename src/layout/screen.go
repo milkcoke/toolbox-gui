@@ -133,7 +133,7 @@ func (widgetConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContaine
 				return
 			}
 
-			dialog.ShowInformation("Node.js", "Node.js download complete", win)
+			dialog.ShowInformation("Success", "Node.js download complete", win)
 		}()
 	}
 
