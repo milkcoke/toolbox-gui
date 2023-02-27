@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 type AppConfig struct {
@@ -88,21 +89,59 @@ func (widgetConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContaine
 	nodeImg := canvas.NewImageFromResource(nodeIcon)
 	nodeImg.SetMinSize(imgSize)
 
-	//nodeImgBtn := widget.NewButtonWithIcon("Node.js", nodeIcon, func() {})
-	nodeImgBtn := widget.NewButtonWithIcon("Node.js", nodeIcon, func() {})
-	goImgBtn := widget.NewButtonWithIcon("Go", golangIcon, func() {})
-	notionImgBtn := widget.NewButtonWithIcon("Notion", notionIcon, func() {})
-	dockerImgBtn := widget.NewButtonWithIcon("Docker", dockerIcon, func() {})
-
-	// NewMax 에서는 자식 크기의 minSize 를 구해서 그 최대값으로 설정함.
-	log.Println("node img btn minimum size: ", nodeImgBtn.Size())
-
-	//nodeProgress := widget.NewProgressBar()
+	nodeProgress := widget.NewProgressBar()
 	goProgress := widget.NewProgressBar()
 	notionProgress := widget.NewProgressBar()
 	dockerProgress := widget.NewProgressBar()
 
-	//nodeProgress.Hide()
+	client := req.C().SetOutputDirectory(widgetConfig.DownloadPath)
+
+	callback := func(info req.DownloadInfo) {
+		log.Printf("contentLength: %n\n", info.Response.ContentLength)
+		if info.Response.Response != nil {
+			log.Printf("downloadSize : %n\n", info.DownloadedSize)
+			nodeProgress.SetValue(float64(info.DownloadedSize) / float64(info.Response.ContentLength))
+		}
+	}
+
+	nodeImgBtn := widget.NewButtonWithIcon("Node.js", nodeIcon, func() {})
+	nodeImgBtn.OnTapped = func() {
+		nodeInst := app.NodeInstaller
+		nodeImgBtn.Disable()
+		nodeProgress.Show()
+		go func() {
+			defer nodeImgBtn.Enable()
+			defer nodeProgress.Hide()
+			// TODO
+			//  Read https://req.cool/docs/tutorial/download/
+			res, err := client.R().
+				SetRetryCount(5).
+				SetRetryFixedInterval(2*time.Second).
+				SetOutputFile(nodeInst.Name+nodeInst.Ext).
+				SetDownloadCallbackWithInterval(callback, 300*time.Millisecond).
+				Get(nodeInst.Url)
+
+			if err != nil {
+				log.Printf("Failed to download : %s\n", nodeInst.Name)
+				dialog.ShowInformation("Error", "Node.js download failed", win)
+				return
+			}
+
+			if res.GetStatusCode() != http.StatusOK {
+				log.Printf("Status code : %n\n", res.GetStatusCode())
+				dialog.ShowInformation("Error", "Node.js download failed", win)
+				return
+			}
+
+			dialog.ShowInformation("Node.js", "Node.js download complete", win)
+		}()
+	}
+
+	goImgBtn := widget.NewButtonWithIcon("Go", golangIcon, func() {})
+	notionImgBtn := widget.NewButtonWithIcon("Notion", notionIcon, func() {})
+	dockerImgBtn := widget.NewButtonWithIcon("Docker", dockerIcon, func() {})
+
+	nodeProgress.Hide()
 	goProgress.Hide()
 	notionProgress.Hide()
 	dockerProgress.Hide()
@@ -117,11 +156,10 @@ func (widgetConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContaine
 	// 여기서 앱을 불러와서 New Window 를 띄워야함.
 	//buttonsContainer := container.New(layout.NewGridLayout(3),
 	buttonsContainer := container.New(layout.NewGridWrapLayout(fyne.NewSize(391, 240)),
-		container.New(&customMaxLayout{}, nodeImgBtn),
-		//container.New(&customMaxLayout{}, nodeImgBtn, container.NewCenter(nodeProgress)),
-		//container.NewMax(goImgBtn, container.NewCenter(goProgress)),
-		//container.NewMax(notionImgBtn, container.NewCenter(notionProgress)),
-		//container.NewMax(dockerImgBtn, container.NewCenter(dockerProgress)),
+		container.NewMax(nodeImgBtn, container.NewCenter(nodeProgress)),
+		container.NewMax(goImgBtn, container.NewCenter(goProgress)),
+		container.NewMax(notionImgBtn, container.NewCenter(notionProgress)),
+		container.NewMax(dockerImgBtn, container.NewCenter(dockerProgress)),
 		// space,
 	)
 
@@ -135,7 +173,7 @@ func (widgetConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContaine
 		nodeImgBtn, goImgBtn, notionImgBtn, dockerImgBtn,
 	}
 
-	widgetConfig.initEventListener()
+	//widgetConfig.initEventListener()
 
 	widgetConfig.Container = vboxContainer
 
