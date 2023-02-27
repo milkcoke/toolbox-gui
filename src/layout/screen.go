@@ -146,21 +146,11 @@ func (widgetConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContaine
 	notionProgress.Hide()
 	dockerProgress.Hide()
 
-	//var space = layout.NewSpacer()
-	/**
-	 * 모든 오브젝트의 크기가 CellSize (패딩포함) 으로 설정됨
-	 * 그리고 MinSize 에서는 셀크기 넓이와 높이를 그대로 리턴함.
-	 * 따라서 imgBtn 이 셀사이즈와 동일한 크기를 갖는지만 우선 확인해보자.
-	 * MinSize 는 오브젝트가 가질 크기인데, 여기서 보면 셀사이즈 그대로 넓이를 반환함..
-	 */
-	// 여기서 앱을 불러와서 New Window 를 띄워야함.
-	//buttonsContainer := container.New(layout.NewGridLayout(3),
 	buttonsContainer := container.New(layout.NewGridWrapLayout(fyne.NewSize(391, 240)),
 		container.NewMax(nodeImgBtn, container.NewCenter(nodeProgress)),
 		container.NewMax(goImgBtn, container.NewCenter(goProgress)),
 		container.NewMax(notionImgBtn, container.NewCenter(notionProgress)),
 		container.NewMax(dockerImgBtn, container.NewCenter(dockerProgress)),
-		// space,
 	)
 
 	vboxContainer := container.NewVBox(
@@ -172,8 +162,6 @@ func (widgetConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContaine
 	widgetConfig.ImageButtons = []*widget.Button{
 		nodeImgBtn, goImgBtn, notionImgBtn, dockerImgBtn,
 	}
-
-	//widgetConfig.initEventListener()
 
 	widgetConfig.Container = vboxContainer
 
