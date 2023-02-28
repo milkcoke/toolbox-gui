@@ -24,5 +24,7 @@ func Test_DownlaodNode(t *testing.T) {
 	testWindow.SetContent(container)
 
 	testApp.Run()
-	config.ImageButtons[0].Tapped(&fyne.PointEvent{Position: fyne.Position{X: 46, Y: 30}})
+
+	nodeAppButton := config.AppWidgets[0].ImageButton
+	nodeAppButton.Tapped(&fyne.PointEvent{Position: fyne.Position{X: 1, Y: 1}})
 }
