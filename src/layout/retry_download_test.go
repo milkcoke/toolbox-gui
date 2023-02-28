@@ -52,7 +52,7 @@ func retryRequest(readFileFD *os.File) {
 }
 
 func Test_Retry_Download(t *testing.T) {
-	testFile := "Docker.exe"
+	testFile := "Docker.crdownload"
 
 	// 테스트 파일 없음
 	if _, err := os.Stat(testFile); err != nil {
