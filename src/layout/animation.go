@@ -34,14 +34,14 @@ func (appConfig *AnimationApp) GenerateProgressBar() {
 	app.Settings().SetTheme(&CustomTheme{})
 }
 
-func (widgetConfig *AppConfig) GenerateAnimation() (animationContainer *fyne.Container) {
+func (appConfig *AppConfig) GenerateAnimation() (animationContainer *fyne.Container) {
 	var iconSize = fyne.Size{Width: 640, Height: 480}
 	// Create the animation effect
 	animation := canvas.NewRectangle(color.White)
 
 	animation.Resize(iconSize)
 
-	widgetConfig.Container.Add(animation)
+	appConfig.Container.Add(animation)
 
 	go func() {
 		for {
@@ -57,5 +57,5 @@ func (widgetConfig *AppConfig) GenerateAnimation() (animationContainer *fyne.Con
 		}
 	}()
 
-	return widgetConfig.Container
+	return appConfig.Container
 }
