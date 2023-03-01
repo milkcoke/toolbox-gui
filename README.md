@@ -1,6 +1,6 @@
 
 
-#### Prerequisite
+### Prerequisite
 - [GNU make](https://gnuwin32.sourceforge.net/packages/make.htm)
 - [Go](https://go.dev/dl/)
 - [Fyne](https://developer.fyne.io/started/) 
@@ -12,20 +12,16 @@ Enable Go Modules integration in IntelliJ IDEA.
 ## What's the Fyne?
 Fyne uses single binding to compile our app with existing graphics driver independent on Operation System.
 
-### Wrapper
-This is used to structure lay out
-
 ## What's learn from this
 - [X] How to get widget
-- [ ] How to generate Image button (Toggle)
+- [X] How to generate Image button (Toggle)
 - [ ] How to generate check box 
 - [X] How to package our application
 - Button Event Listener 
-  - [ ] Batch Download
+  - [X] Batch Download
   - [X] Download one by one
   - [X] Setting download target path
-  - [ ] Open directory
-
+  - [X] Open directory
 
 ### Image Button
 Use material UI or Put canvas.text on top of some image.
@@ -52,7 +48,6 @@ $ fyne package --appVersion [version] -name [app-name] -icon [app-icon-path] -re
 ### Register application
 You need give some money about $100 / year to Apple or Microsoft for supporting cross-platform \
 for signing your application assuring your app is secure.
-
 
 ## Test
 I defined `Makefile` for integration testing.
