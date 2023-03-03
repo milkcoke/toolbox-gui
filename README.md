@@ -3,6 +3,17 @@
 Toolbox provides you developer tool installer kit as latest version. \
 This is beta version application.
 
+## Demo
+![toolbox_demo](https://user-images.githubusercontent.com/48945177/222765964-7db981e6-f862-46be-8033-f3ba3b12169a.gif)
+
+## Quick start
+First build time is long since internally transfile from C/C++ to go.
+
+```bash
+# download this repository and execute
+$ go run .
+```
+
 ### Prerequisite
 - [GNU make](https://gnuwin32.sourceforge.net/packages/make.htm)
 - [Go](https://go.dev/dl/)
@@ -14,6 +25,8 @@ Enable Go Modules integration in IntelliJ IDEA.
 
 ## What's the Fyne?
 Fyne uses single binding to compile our app with existing graphics driver independent on Operation System.
+
+
 
 ### Packaging
 #### 1. Install fyne cmd
