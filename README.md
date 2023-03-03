@@ -1,4 +1,7 @@
 
+# Introduction
+Toolbox provides you developer tool installer kit as latest version. \
+This is beta version application.
 
 ### Prerequisite
 - [GNU make](https://gnuwin32.sourceforge.net/packages/make.htm)
@@ -11,20 +14,6 @@ Enable Go Modules integration in IntelliJ IDEA.
 
 ## What's the Fyne?
 Fyne uses single binding to compile our app with existing graphics driver independent on Operation System.
-
-## What's learn from this
-- [X] How to get widget
-- [X] How to generate Image button (Toggle)
-- [ ] How to generate check box 
-- [X] How to package our application
-- Button Event Listener 
-  - [X] Batch Download
-  - [X] Download one by one
-  - [X] Setting download target path
-  - [X] Open directory
-
-### Image Button
-Use material UI or Put canvas.text on top of some image.
 
 ### Packaging
 #### 1. Install fyne cmd
