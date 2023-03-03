@@ -1,6 +1,6 @@
-BINARY_NAME = falcon_markdown.app
+BINARY_NAME = Toolbox
 LOGO_PATH = assets/app_logo.png
-APP_NAME = Markdown.app
+APP_NAME = Toolbox
 VERSION = 1.0.0
 
 # build: build binary and package app
