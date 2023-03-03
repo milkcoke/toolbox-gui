@@ -9,9 +9,10 @@ import (
 	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	"github.com/imroc/req/v3"
+	"github.com/inhies/go-bytesize"
 	"github.com/milkcoke/auto-setup-gui/src/app"
+	filehandle "github.com/milkcoke/auto-setup-gui/src/file"
 	"image/color"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -55,108 +56,143 @@ func (appConfig *AppConfig) initDownloadDir(pathLabel *widget.Label) {
 	pathLabel.SetText(downloadDir)
 }
 
-func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
-	// C: Global client
-	// Which have corresponding global wrappers
-	// Just treat the package name req as Client to test, set up the Client without create any Client explicitly.
-	// So don't use req.C() not for global configuration.
-	// It affects on global request created by req.R()
-	client := req.C().SetOutputDirectory(appConfig.DownloadPath)
+// asyncRetryDownload
+// This is called only when file not-exist or exist but partial.
+func asyncRetryDownload(readFileFD *os.File, appWidget *appWidget, fullFileLength int64) {
 
-	var fileFullPath = filepath.Join(appConfig.DownloadPath, appWidget.installerConfig.Name+appWidget.installerConfig.Ext)
+	// Check file existence
+	retryFileInfo, err := readFileFD.Stat()
+	if err != nil {
+		log.Fatalln("Failed to open file : ", appWidget.installerConfig.Name)
+	}
 
-	// 파일이 이미 존재
-	if _, err := os.Stat(fileFullPath); err == nil {
-		file, err := os.Open(fileFullPath)
-
-		if err != nil {
-			log.Fatalln(err)
-		}
-		defer file.Close()
-
-		fileInfo, err := file.Stat()
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		headerRes, err := req.R().Head(appWidget.installerConfig.Url)
-		if err != nil {
-			log.Println("헤더 응답 오류 ", err)
-		}
-		// Convert string to int64
-		contentLength := headerRes.GetHeader("Content-Length")
-		fullFileLength, err := strconv.ParseInt(contentLength, 10, 64)
-		if err != nil {
-			log.Println("파일 크기 변환 에러 ", err)
-		}
-		log.Println("전체 파일 길이: ", contentLength)
-		log.Println("현재 파일 크기: ", fileInfo.Size())
-
-		// 도중에 중단된 파일 존재.
-		if fullFileLength == fileInfo.Size() {
-			// 이미 완성된 파일이라면, 해당 파일을 열어주고 끝내야함.
-			// 단, 이벤트 등록은 여전히!
-			os.Chdir(fileFullPath)
-			if err != nil {
-				log.Println("잘못된 디렉토리 경로")
-			}
-		} else {
-			// 미완성 파일 존재
-
-			// TODO
-			//  여기서 SetHeader 를 갱신하고 재시도하는 로직이 필요함.
-			res, err := req.R().SetHeader("Range", fmt.Sprintf("bytes=%d-", fileInfo.Size())).Get(appWidget.installerConfig.Url)
-
-			// err 날 때 마다 재시도 조져야되나 하...
-			if err != nil {
-				log.Fatalln("또 ㅈㄹ이네 : ", err)
-			}
-			defer res.Body.Close()
-
-			file, err = os.OpenFile(fileFullPath, os.O_APPEND|os.O_WRONLY, 0644)
-			if err != nil {
-				log.Fatal(err)
-			}
-			defer file.Close()
-
-			_, err = io.Copy(file, res.Body)
-			if err != nil {
-				log.Fatalln("덮어쓰다 ㅈ창남 : ", err)
-			}
-		}
-
+	// Check file download complete
+	// This is for protecting code for recursive function
+	if fullFileLength == retryFileInfo.Size() {
+		readFileFD.Close()
+		// only this printed when download complete without checking file size
+		dialog.ShowInformation("Success after retrying : ", appWidget.installerConfig.Name+" download complete", appWidget.parentWidget)
 		return
 	}
 
+	streamFile, err := os.OpenFile(readFileFD.Name(), os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		log.Fatalln("Failed to open readFileFD : ", err)
+	}
+	defer streamFile.Close()
+	appWidget.progressBar.Show()
+
+	//var startSize = retryFileInfo.Size()
 	callback := func(info req.DownloadInfo) {
 		if info.Response.Response != nil {
 			appWidget.progressBar.SetValue(float64(info.DownloadedSize) / float64(info.Response.ContentLength))
 		}
 	}
 
-	// return type func() 로 하면 method 로도 eventListener 등록할 수 있음.
+	res, err := req.R().
+		SetDownloadCallbackWithInterval(callback, 300*time.Millisecond).
+		SetHeader("Range", fmt.Sprintf("bytes=%d-", retryFileInfo.Size())).
+		SetOutput(streamFile).
+		Get(appWidget.installerConfig.Url)
+
+	defer res.Body.Close()
+
+	if err != nil {
+		log.Println("Http request fail : ", err)
+		time.Sleep(2 * time.Second)
+		go asyncRetryDownload(readFileFD, appWidget, fullFileLength)
+		return
+	}
+
+	readFileFD.Close()
+	dialog.ShowInformation("Success after retrying : ", appWidget.installerConfig.Name+" download complete", appWidget.parentWidget)
+
+}
+
+func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
+
+	// Tool installer total size init
+	headerRes, err := req.R().Head(appWidget.installerConfig.Url)
+	if err != nil {
+		log.Println("Failed to request head ", err)
+	}
+	contentLength := headerRes.GetHeader("Content-Length")
+	fullFileSize, err := strconv.ParseInt(contentLength, 10, 64)
+	if err != nil {
+		log.Println("Failed to parse int of total size of tool installer ", err)
+	}
+
 	appWidget.ImageButton.OnTapped = func() {
 		appWidget.ImageButton.Disable()
-		appWidget.progressBar.Show()
+
+		defer appWidget.ImageButton.Enable()
+		defer appWidget.progressBar.Hide()
+		// return type func() 로 하면 method 로도 eventListener 등록할 수 있음.
+
+		// C: Global client
+		// Which have corresponding global wrappers
+		// Just treat the package name req as Client to test, set up the Client without create any Client explicitly.
+		// So don't use req.C() not for global configuration.
+		// It affects on global request created by req.R()
+		client := req.C().SetOutputDirectory(appConfig.DownloadPath)
+
+		var fileFullPath = filepath.Join(appConfig.DownloadPath, appWidget.installerConfig.Name+appWidget.installerConfig.Ext)
+
+		// Already file exists
+		if _, err := os.Stat(fileFullPath); err == nil {
+			readFileFD, err := os.Open(fileFullPath)
+
+			if err != nil {
+				log.Fatalln(err)
+			}
+
+			fileInfo, err := readFileFD.Stat()
+			if err != nil {
+				log.Fatalln(err)
+			}
+			log.Println("전체 파일 길이: ", bytesize.New(float64(fullFileSize)))
+			log.Println("현재 파일 크기: ", bytesize.New(float64(fileInfo.Size())))
+
+			// Already installer is installed.
+			if fullFileSize == fileInfo.Size() {
+				filehandle.NavigateToDir(fileFullPath)
+				if err != nil {
+					log.Println("Invalid directory path : ", err)
+				}
+				return
+			} else {
+				go asyncRetryDownload(readFileFD, appWidget, fullFileSize)
+				return
+			}
+		}
+
+		// First download request
+		callback := func(info req.DownloadInfo) {
+			if info.Response.Response != nil {
+				appWidget.progressBar.SetValue(float64(info.DownloadedSize) / float64(info.Response.ContentLength))
+			}
+		}
 
 		go func() {
-			defer appWidget.ImageButton.Enable()
-			defer appWidget.progressBar.Hide()
-			// TODO
-			//  Read https://req.cool/docs/tutorial/download/
+			appWidget.progressBar.Show()
 			res, err := client.R().
-				SetRetryCount(5).
-				SetRetryFixedInterval(2*time.Second).
-				SetOutputFile(appWidget.installerConfig.Name+appWidget.installerConfig.Ext).
 				SetDownloadCallbackWithInterval(callback, 300*time.Millisecond).
+				SetOutputFile(appWidget.installerConfig.Name + appWidget.installerConfig.Ext).
 				Get(appWidget.installerConfig.Url)
 
 			if err != nil {
-				log.Printf("Failed to download : %s\n", appWidget.installerConfig.Name)
-				dialog.ShowInformation("Error", appWidget.installerConfig.Name+" download failed", appWidget.parentWidget)
+				log.Println("Failed to download : ", err)
+				readFileFD, err := os.Open(fileFullPath)
+				defer readFileFD.Close()
+				if err != nil {
+					log.Println("Failed to open readFileFD : ", readFileFD)
+					log.Println("error : ", err)
+				}
+				go asyncRetryDownload(readFileFD, appWidget, fullFileSize)
 				return
 			}
 
+			// 요청 응답 코드가 다른 경우 그냥 중단.
 			if res.GetStatusCode() != http.StatusOK {
 				log.Printf("Status code : %d\n", res.GetStatusCode())
 				dialog.ShowInformation("Error", appWidget.installerConfig.Name+" download failed", appWidget.parentWidget)
@@ -166,7 +202,9 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 			dialog.ShowInformation("Success", appWidget.installerConfig.Name+" download complete", appWidget.parentWidget)
 		}()
 	}
+
 }
+
 func (appConfig *AppConfig) MakeUI() (*widget.Entry, *widget.RichText) {
 	edit := widget.NewMultiLineEntry()
 	preview := widget.NewRichTextFromMarkdown("기모링딩동")
