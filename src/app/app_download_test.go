@@ -44,7 +44,7 @@ func asyncRetryDownload(readFileFD *os.File, installerCfg InstallerConfig, fullF
 
 	res, err := req.R().
 		SetHeader("Range", fmt.Sprintf("bytes=%d-", retryFileInfo.Size())).
-		Get(DockerInstaller.Url)
+		Get(installerCfg.Url)
 
 	defer res.Body.Close()
 
