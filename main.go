@@ -11,7 +11,7 @@ func main() {
 	app := app.New()
 
 	// create a window for the app
-	win := app.NewWindow("My-Installer")
+	win := app.NewWindow("Falcon Toolbox")
 
 	var config = layout.Config
 	var container = config.LoadImageButtons(win)
