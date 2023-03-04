@@ -147,12 +147,13 @@ func downloadInstaller(installerCfg InstallerConfig, wg *sync.WaitGroup) {
 
 func Test_All_App(t *testing.T) {
 	waitGroup := &sync.WaitGroup{}
-	waitGroup.Add(4)
+	waitGroup.Add(2)
 
-	go downloadInstaller(DockerInstaller, waitGroup)
-	go downloadInstaller(NotionInstaller, waitGroup)
-	go downloadInstaller(NodeInstaller, waitGroup)
-	go downloadInstaller(GoInstaller, waitGroup)
-
+	//go downloadInstaller(DockerInstaller, waitGroup)
+	//go downloadInstaller(NotionInstaller, waitGroup)
+	//go downloadInstaller(NodeInstaller, waitGroup)
+	//go downloadInstaller(GoInstaller, waitGroup)
+	go downloadInstaller(PostmanInstaller, waitGroup)
+	go downloadInstaller(PythonInstaller, waitGroup)
 	waitGroup.Wait()
 }

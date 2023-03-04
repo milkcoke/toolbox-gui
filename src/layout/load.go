@@ -224,70 +224,89 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 	downloadDirPathBtn := widget.NewButton("Select path", appConfig.setDirectory(win, pathLabel))
 
 	// Load the icon image from a file
+	pythonIcon, err := fyne.LoadResourceFromPath("assets/python_logo.svg")
+	if err != nil {
+		log.Printf("Failed to load %s icon\n", pythonIcon.Name())
+	}
 	nodeIcon, err := fyne.LoadResourceFromPath("assets/nodejs_logo.svg")
 	if err != nil {
 		log.Printf("Failed to load %s icon\n", nodeIcon.Name())
 	}
-
-	golangIcon, err := fyne.LoadResourceFromPath("assets/go_logo_aqua.svg")
+	golangIcon, err := fyne.LoadResourceFromPath("assets/gopher_logo.svg")
 	if err != nil {
 		log.Printf("Failed to load %s icon\n", golangIcon.Name())
 	}
-
-	notionIcon, err := fyne.LoadResourceFromPath("assets/notion.svg")
-	if err != nil {
-		log.Printf("Failed to load %s icon\n", notionIcon.Name())
-	}
-
 	dockerIcon, err := fyne.LoadResourceFromPath("assets/docker.svg")
 	if err != nil {
 		log.Printf("Failed to load %s icon\n", dockerIcon.Name())
+	}
+	postmanIcon, err := fyne.LoadResourceFromPath("assets/postman_logo.svg")
+	if err != nil {
+		log.Printf("Failed to load %s icon\n", postmanIcon.Name())
+	}
+	notionIcon, err := fyne.LoadResourceFromPath("assets/notion_logo.svg")
+	if err != nil {
+		log.Printf("Failed to load %s icon\n", notionIcon.Name())
 	}
 
 	/**
 	 * button, space is not resized in layout and container
 	 * since it's inherited from container or layout
 	 */
-
+	pythonProgress := widget.NewProgressBar()
 	nodeProgress := widget.NewProgressBar()
 	goProgress := widget.NewProgressBar()
-	notionProgress := widget.NewProgressBar()
 	dockerProgress := widget.NewProgressBar()
+	postmanProgress := widget.NewProgressBar()
+	notionProgress := widget.NewProgressBar()
 
+	pythonProgress.Hide()
 	nodeProgress.Hide()
 	goProgress.Hide()
 	notionProgress.Hide()
 	dockerProgress.Hide()
+	postmanProgress.Hide()
 
+	pythonImgBtn := widget.NewButtonWithIcon("Python", pythonIcon, func() {})
 	nodeImgBtn := widget.NewButtonWithIcon("Node.js", nodeIcon, func() {})
 	goImgBtn := widget.NewButtonWithIcon("Go", golangIcon, func() {})
-	notionImgBtn := widget.NewButtonWithIcon("Notion", notionIcon, func() {})
 	dockerImgBtn := widget.NewButtonWithIcon("Docker", dockerIcon, func() {})
+	postmanImgBtn := widget.NewButtonWithIcon("Postman", postmanIcon, func() {})
+	notionImgBtn := widget.NewButtonWithIcon("Notion", notionIcon, func() {})
 
+	pythonAppWidget := &appWidget{
+		pythonImgBtn, app.PythonInstaller, pythonProgress, win,
+	}
 	nodeAppWidget := &appWidget{
 		nodeImgBtn, app.NodeInstaller, nodeProgress, win,
 	}
 	goAppWidget := &appWidget{
 		goImgBtn, app.GoInstaller, goProgress, win,
 	}
+	dockerAppWidget := &appWidget{
+		dockerImgBtn, app.DockerInstaller, dockerProgress, win,
+	}
+	postmanAppWidget := &appWidget{
+		postmanImgBtn, app.PostmanInstaller, postmanProgress, win,
+	}
 	notionAppWidget := &appWidget{
 		notionImgBtn, app.NotionInstaller, notionProgress, win,
 	}
 
-	dockerAppWidget := &appWidget{
-		dockerImgBtn, app.DockerInstaller, dockerProgress, win,
-	}
-
+	pythonAppWidget.setEventListener(appConfig)
 	nodeAppWidget.setEventListener(appConfig)
 	goAppWidget.setEventListener(appConfig)
-	notionAppWidget.setEventListener(appConfig)
 	dockerAppWidget.setEventListener(appConfig)
+	postmanAppWidget.setEventListener(appConfig)
+	notionAppWidget.setEventListener(appConfig)
 
 	buttonsContainer := container.New(layout.NewGridWrapLayout(fyne.NewSize(391, 240)),
+		container.NewMax(pythonImgBtn, container.NewCenter(pythonProgress)),
 		container.NewMax(nodeImgBtn, container.NewCenter(nodeProgress)),
 		container.NewMax(goImgBtn, container.NewCenter(goProgress)),
-		container.NewMax(notionImgBtn, container.NewCenter(notionProgress)),
 		container.NewMax(dockerImgBtn, container.NewCenter(dockerProgress)),
+		container.NewMax(postmanImgBtn, container.NewCenter(postmanProgress)),
+		container.NewMax(notionImgBtn, container.NewCenter(notionProgress)),
 	)
 
 	vboxContainer := container.NewVBox(
