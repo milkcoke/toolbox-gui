@@ -4,7 +4,7 @@ Toolbox provides you developer tool installer kit as latest version. \
 This is beta version application.
 
 ## Demo
-![toolbox_demo](https://user-images.githubusercontent.com/48945177/222765964-7db981e6-f862-46be-8033-f3ba3b12169a.gif)
+![toolbox_demo2](https://user-images.githubusercontent.com/48945177/222872651-1c78aea7-1c58-4117-9000-7719ed970da3.gif)
 
 ## Quick start
 First build time is long since internally transfile from C/C++ to go.
