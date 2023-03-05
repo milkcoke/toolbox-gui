@@ -57,7 +57,8 @@ func (appConfig *AppConfig) initDownloadDir(pathLabel *widget.Label) {
 // asyncRetryDownload
 // This is called only when file not-exist or exist but partial.
 func asyncRetryDownload(readFileFD *os.File, appWidget *appWidget, fullFileLength int64) {
-
+	appWidget.ImageButton.Disable()
+	defer appWidget.ImageButton.Enable()
 	// Check file existence
 	retryFileInfo, err := readFileFD.Stat()
 	if err != nil {
@@ -83,7 +84,6 @@ func asyncRetryDownload(readFileFD *os.File, appWidget *appWidget, fullFileLengt
 	defer streamFile.Close()
 	appWidget.progressBar.Show()
 
-	//var startSize = retryFileInfo.Size()
 	callback := func(info req.DownloadInfo) {
 		if info.Response.Response != nil {
 			appWidget.progressBar.SetValue(float64(info.DownloadedSize) / float64(info.Response.ContentLength))
@@ -160,6 +160,7 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 				if err != nil {
 					log.Println("Invalid directory path : ", err)
 				}
+				readFileFD.Close()
 				return
 			} else {
 				go asyncRetryDownload(readFileFD, appWidget, fullFileSize)
@@ -175,6 +176,9 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 		}
 
 		go func() {
+			appWidget.ImageButton.Disable()
+			defer appWidget.ImageButton.Enable()
+
 			appWidget.progressBar.Show()
 			res, err := client.R().
 				SetDownloadCallbackWithInterval(callback, 300*time.Millisecond).
@@ -184,7 +188,6 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 			if err != nil {
 				log.Println("Failed to download : ", err)
 				readFileFD, err := os.Open(fileFullPath)
-				defer readFileFD.Close()
 				if err != nil {
 					log.Println("Failed to open readFileFD : ", readFileFD)
 					log.Println("error : ", err)
