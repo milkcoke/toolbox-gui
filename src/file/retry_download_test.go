@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/imroc/req/v3"
 	"github.com/inhies/go-bytesize"
-	"github.com/milkcoke/auto-setup-gui/src/app"
+	"github.com/milkcoke/toolbox-gui/src/app"
 	"io"
 	"log"
 	"os"

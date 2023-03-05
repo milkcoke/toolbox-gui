@@ -3,7 +3,7 @@ package main
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/test"
-	"github.com/milkcoke/auto-setup-gui/src/layout"
+	"github.com/milkcoke/toolbox-gui/src/layout"
 	"testing"
 )
 

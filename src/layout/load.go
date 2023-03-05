@@ -10,8 +10,8 @@ import (
 	"fyne.io/fyne/v2/widget"
 	"github.com/imroc/req/v3"
 	"github.com/inhies/go-bytesize"
-	"github.com/milkcoke/auto-setup-gui/src/app"
-	filehandle "github.com/milkcoke/auto-setup-gui/src/file"
+	"github.com/milkcoke/toolbox-gui/src/app"
+	filehandle "github.com/milkcoke/toolbox-gui/src/file"
 	"image/color"
 	"log"
 	"net/http"
@@ -25,12 +25,10 @@ type AppConfig struct {
 	EditWidget    *widget.Entry
 	PreviewWidget *widget.RichText
 	CurrentFile   fyne.URI
-	// TODO
-	//  setDirectory 할때 모든 appWidget 에 대한 경로 업데이트 해줘야함. (eventListener 혹은 동적인 다운로드 경로)
-	DownloadPath string
-	SaveMenuItem *fyne.MenuItem
-	AppWidgets   []*appWidget
-	Container    *fyne.Container
+	DownloadPath  string
+	SaveMenuItem  *fyne.MenuItem
+	AppWidgets    []*appWidget
+	Container     *fyne.Container
 }
 
 // Related data needs to be handled or manipulated as a unit.
@@ -63,7 +61,10 @@ func asyncRetryDownload(readFileFD *os.File, appWidget *appWidget, fullFileLengt
 	// Check file existence
 	retryFileInfo, err := readFileFD.Stat()
 	if err != nil {
-		log.Fatalln("Failed to open file : ", appWidget.installerConfig.Name)
+		log.Println("Failed to open file : ", appWidget.installerConfig.Name)
+		time.Sleep(2 * time.Second)
+		go asyncRetryDownload(readFileFD, appWidget, fullFileLength)
+		return
 	}
 
 	// Check file download complete
@@ -155,7 +156,7 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 
 			// Already installer is installed.
 			if fullFileSize == fileInfo.Size() {
-				filehandle.NavigateToDir(fileFullPath)
+				err := filehandle.NavigateToDir(fileFullPath)
 				if err != nil {
 					log.Println("Invalid directory path : ", err)
 				}

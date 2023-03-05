@@ -1,10 +1,11 @@
-module github.com/milkcoke/auto-setup-gui
+module github.com/milkcoke/toolbox-gui
 
 go 1.20
 
 require (
 	fyne.io/fyne/v2 v2.3.1
 	github.com/imroc/req/v3 v3.32.3
+	github.com/inhies/go-bytesize v0.0.0-20220417184213-4913239db9cf
 )
 
 require (
@@ -27,7 +28,6 @@ require (
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
-	github.com/inhies/go-bytesize v0.0.0-20220417184213-4913239db9cf // indirect
 	github.com/jsummers/gobmp v0.0.0-20151104160322-e2ba15ffa76e // indirect
 	github.com/onsi/ginkgo/v2 v2.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect

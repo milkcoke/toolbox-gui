@@ -3,7 +3,7 @@ package main
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
-	"github.com/milkcoke/auto-setup-gui/src/layout"
+	"github.com/milkcoke/toolbox-gui/src/layout"
 )
 
 func main() {
