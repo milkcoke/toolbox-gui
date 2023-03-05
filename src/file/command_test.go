@@ -2,6 +2,7 @@ package filehandle
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"testing"
@@ -30,7 +31,11 @@ func Test_OpenFile(t *testing.T) {
 	if err != nil {
 		fmt.Println(err)
 	}
+	log.Println(currentDir)
 
 	fileFullPath := filepath.Join(currentDir, "..", "..", "test_assets", partialTestFile)
-	NavigateToDir(fileFullPath)
+
+	if err := NavigateToDir(fileFullPath); err != nil {
+		t.Fatal("Failed to select file in OS browser : ", err)
+	}
 }

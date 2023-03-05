@@ -1,25 +1,26 @@
 package filehandle
 
 import (
-	"log"
+	"errors"
 	"os"
 	"os/exec"
 	"runtime"
 )
 
-func NavigateToDir(fileFullPath string) {
+func NavigateToDir(fileFullPath string) error {
 	// Is it right approach conditional statement with runtime.GOOS ?
 	switch runtime.GOOS {
 	case "windows":
 		cmdName := "explorer"
 
-		cmd := exec.Command(cmdName, fileFullPath)
+		cmd := exec.Command(cmdName, "/select,", fileFullPath)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 
 		if err := cmd.Run(); err != nil {
-			log.Fatal("\nFailed to open downloaded test file! ", err)
+			return err
 		}
+
 	case "darwin":
 		cmdName := "open"
 
@@ -28,9 +29,11 @@ func NavigateToDir(fileFullPath string) {
 		cmd.Stderr = os.Stderr
 
 		if err := cmd.Run(); err != nil {
-			log.Fatal("\nFailed to open downloaded test file! ", err)
+			return err
 		}
 	default:
-		log.Fatal("Not supported OS")
+		return errors.New("not supported OS")
 	}
+
+	return nil
 }
