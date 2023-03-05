@@ -9,7 +9,7 @@ import (
 
 // This is integration test
 
-func Test_DownlaodNode(t *testing.T) {
+func Test_DownloadNode(t *testing.T) {
 	testApp := test.NewApp()
 
 	// create a window for the testApp
