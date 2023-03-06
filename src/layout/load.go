@@ -11,6 +11,7 @@ import (
 	"github.com/imroc/req/v3"
 	"github.com/inhies/go-bytesize"
 	"github.com/milkcoke/toolbox-gui/src/app"
+	assets "github.com/milkcoke/toolbox-gui/src/assets"
 	filehandle "github.com/milkcoke/toolbox-gui/src/file"
 	"image/color"
 	"log"
@@ -226,32 +227,12 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 	appConfig.initDownloadDir(pathLabel)
 
 	downloadDirPathBtn := widget.NewButton("Select path", appConfig.setDirectory(win, pathLabel))
-
-	// Load the icon image from a file
-	pythonIcon, err := fyne.LoadResourceFromPath("assets/python_logo.svg")
-	if err != nil {
-		log.Printf("Failed to load %s icon\n", pythonIcon.Name())
-	}
-	nodeIcon, err := fyne.LoadResourceFromPath("assets/nodejs_logo.svg")
-	if err != nil {
-		log.Printf("Failed to load %s icon\n", nodeIcon.Name())
-	}
-	golangIcon, err := fyne.LoadResourceFromPath("assets/gopher_logo.svg")
-	if err != nil {
-		log.Printf("Failed to load %s icon\n", golangIcon.Name())
-	}
-	dockerIcon, err := fyne.LoadResourceFromPath("assets/docker.svg")
-	if err != nil {
-		log.Printf("Failed to load %s icon\n", dockerIcon.Name())
-	}
-	postmanIcon, err := fyne.LoadResourceFromPath("assets/postman_logo.svg")
-	if err != nil {
-		log.Printf("Failed to load %s icon\n", postmanIcon.Name())
-	}
-	notionIcon, err := fyne.LoadResourceFromPath("assets/notion_logo.svg")
-	if err != nil {
-		log.Printf("Failed to load %s icon\n", notionIcon.Name())
-	}
+	pythonIcon := fyne.NewStaticResource("Python", assets.PythonBytes)
+	nodeIcon := fyne.NewStaticResource("Node.js", assets.NodeBytes)
+	golangIcon := fyne.NewStaticResource("Go", assets.GoBytes)
+	dockerIcon := fyne.NewStaticResource("Docker", assets.DockerBytes)
+	postmanIcon := fyne.NewStaticResource("Postman", assets.PostmanBytes)
+	notionIcon := fyne.NewStaticResource("Notion", assets.NotionBytes)
 
 	/**
 	 * button, space is not resized in layout and container
