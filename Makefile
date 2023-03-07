@@ -1,6 +1,6 @@
 BINARY_NAME = Toolbox
 LOGO_PATH = assets/app_icon.png
-APP_ID = milkcoke.falcon-toolbox
+APP_ID = milkcoke.toolbox
 APP_NAME = Toolbox
 VERSION = 1.0.0
 
