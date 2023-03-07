@@ -1,14 +1,21 @@
 package assets
 
-import (
-	"embed"
-)
+import _ "embed"
 
-//go:embed *
-var assets embed.FS
-var PythonBytes, _ = assets.ReadFile("python_logo.svg")
-var NodeBytes, _ = assets.ReadFile("nodejs_logo.svg")
-var GoBytes, _ = assets.ReadFile("gopher_logo.svg")
-var DockerBytes, _ = assets.ReadFile("docker.svg")
-var PostmanBytes, _ = assets.ReadFile("postman_logo.svg")
-var NotionBytes, _ = assets.ReadFile("notion_logo.svg")
+//go:embed python_logo.svg
+var PythonBytes []byte
+
+//go:embed nodejs_logo.svg
+var NodeBytes []byte
+
+//go:embed gopher_logo.svg
+var GoBytes []byte
+
+//go:embed docker.svg
+var DockerBytes []byte
+
+//go:embed postman_logo.svg
+var PostmanBytes []byte
+
+//go:embed notion_logo.svg
+var NotionBytes []byte
