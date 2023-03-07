@@ -6,9 +6,13 @@
 *.dylib
 *.pkg
 *.dmg
+*.app
 
 # Test binary, built with `go test -c`
 *.test
+
+# pakcage directory
+package
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
@@ -18,3 +22,6 @@
 
 # IntelliJ IDEA
 .idea
+
+# script file
+*.sh
