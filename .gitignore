@@ -25,3 +25,6 @@ package
 
 # script file
 *.sh
+
+# Build just for me
+Makefile
