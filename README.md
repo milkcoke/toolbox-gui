@@ -1,7 +1,6 @@
 
 # Introduction
-Toolbox provides you developer tool installer kit (LTS) \
-Useful when you need install PC room, academy, service center where file system initialization is required.
+**_Just 5 minutes, get ready for the installer tool!_**
 
 ## Demo
 ![toolbox_demo](assets/app_demo.gif)
@@ -12,9 +11,9 @@ You can download execution file and use according to following platform
 | Platform      | Download                                                                                                                 |
 |---------------|--------------------------------------------------------------------------------------------------------------------------|
 | Windows (x64) | [Toolbox-Windows-x64.exe](https://github.com/milkcoke/toolbox-gui/releases/download/v1.0.1-beta/Toolbox-Windows-x64.exe) |
-| macOS (x64)   | Not yet                                                                                                                  |
+| macOS (x64)   | Not yet supported                                                                                                        |
 | macOS (arm64) | [Toolbox-osx-arm64.dmg](https://github.com/milkcoke/toolbox-gui/releases/download/v1.0.1-beta/Toolbox-osx-arm64.dmg)     |
-| Linux         | Not yet                                                                                                                  |
+| Linux         | Not yet supported                                                                                                        |
 
 ## Quick start
 **Just download execution file, and start it!**. 

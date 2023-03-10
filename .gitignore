@@ -28,3 +28,6 @@ package
 
 # Build just for me
 Makefile
+
+# certificate
+*.p12
