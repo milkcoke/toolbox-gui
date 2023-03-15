@@ -14,6 +14,9 @@
 # pakcage directory
 package
 
+# package file
+*.appx
+
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 
@@ -23,6 +26,9 @@ package
 # IntelliJ IDEA
 .idea
 
+# Visual Studio
+.vs
+
 # script file
 *.sh
 
@@ -31,3 +37,4 @@ Makefile
 
 # certificate
 *.p12
+*.pfx
