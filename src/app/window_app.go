@@ -12,8 +12,8 @@ type InstallerConfig struct {
 var GoInstaller = InstallerConfig{
 	"Go",
 	".msi",
-	"https://go.dev/dl/go1.20.1.windows-amd64.msi",
-	"1.20.1",
+	"https://go.dev/dl/go1.20.2.windows-amd64.msi",
+	"1.20.2",
 }
 var DockerInstaller = InstallerConfig{
 	"Docker",
@@ -26,14 +26,14 @@ var NotionInstaller = InstallerConfig{
 	"Notion",
 	".exe",
 	"https://www.notion.so/desktop/windows/download",
-	"2.21",
+	"2.0.41",
 }
 
 var NodeInstaller = InstallerConfig{
 	"Nodejs",
 	".msi",
-	"https://nodejs.org/dist/v18.14.2/node-v18.14.2-x64.msi",
-	"v18.14.2",
+	"https://nodejs.org/dist/v18.15.0/node-v18.15.0-x64.msi",
+	"v18.15.0",
 }
 
 var PostmanInstaller = InstallerConfig{
