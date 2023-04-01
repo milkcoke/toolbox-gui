@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	fyne.io/fyne/v2 v2.3.1
+	fyne.io/x/fyne v0.0.0-20230128220048-43a1c4cd1ed8
 	github.com/imroc/req/v3 v3.32.3
 	github.com/inhies/go-bytesize v0.0.0-20220417184213-4913239db9cf
 )
