@@ -28,6 +28,12 @@ package
 
 # Visual Studio
 .vs
+bin
+obj
+*.appx
+*.csproj
+*.sln
+*.cs
 
 # script file
 *.sh
