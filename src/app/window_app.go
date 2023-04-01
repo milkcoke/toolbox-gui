@@ -40,7 +40,7 @@ var PostmanInstaller = InstallerConfig{
 	"Postman",
 	".exe",
 	"https://dl.pstmn.io/download/latest/win64",
-	"10.10.8",
+	"10.12.0",
 }
 
 var PythonInstaller = InstallerConfig{
