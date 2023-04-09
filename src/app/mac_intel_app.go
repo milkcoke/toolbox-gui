@@ -47,7 +47,7 @@ var PostmanInstaller = InstallerConfig{
 	"10.10.8",
 }
 
-var pythonInstaller = InstallerConfig{
+var PythonInstaller = InstallerConfig{
 	"Python",
 	".pkg",
 	"https://www.python.org/ftp/python/3.11.2/python-3.11.2-macos11.pkg",
