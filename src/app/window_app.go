@@ -12,8 +12,8 @@ type InstallerConfig struct {
 var GoInstaller = InstallerConfig{
 	"Go",
 	".msi",
-	"https://go.dev/dl/go1.20.2.windows-amd64.msi",
-	"1.20.2",
+	"https://go.dev/dl/go1.20.3.windows-amd64.msi",
+	"1.20.3",
 }
 var DockerInstaller = InstallerConfig{
 	"Docker",

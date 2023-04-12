@@ -12,8 +12,8 @@ type InstallerConfig struct {
 var GoInstaller = InstallerConfig{
 	"Go",
 	".pkg",
-	"https://go.dev/dl/go1.20.1.darwin-arm64.pkg",
-	"1.20.1",
+	"https://go.dev/dl/go1.20.3.darwin-arm64.pkg",
+	"1.20.3",
 }
 var DockerInstaller = InstallerConfig{
 	"Docker",
