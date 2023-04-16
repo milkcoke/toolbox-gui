@@ -75,6 +75,7 @@ func asyncRetryDownload(readFileFD *os.File, appWidget *appWidget, fullFileLengt
 		readFileFD.Close()
 		// only this printed when download complete without checking file size
 		dialog.ShowInformation("Success after retrying : ", appWidget.installerConfig.Name+" download complete", appWidget.parentWidget)
+		appWidget.updateButtonStatus(app.CompleteDownload)
 		return
 	}
 
@@ -108,7 +109,7 @@ func asyncRetryDownload(readFileFD *os.File, appWidget *appWidget, fullFileLengt
 
 	readFileFD.Close()
 	dialog.ShowInformation("Success after retrying : ", appWidget.installerConfig.Name+" download complete", appWidget.parentWidget)
-
+	appWidget.updateButtonStatus(app.CompleteDownload)
 }
 
 func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
@@ -157,9 +158,11 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 				if err != nil {
 					log.Println("Invalid directory path : ", err)
 				}
+				appWidget.updateButtonStatus(app.OpenInstaller)
 				readFileFD.Close()
 				return
 			} else {
+				appWidget.updateButtonStatus(app.PartialDownloaded)
 				go asyncRetryDownload(readFileFD, appWidget, fullFileSize)
 				return
 			}
@@ -174,6 +177,7 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 
 		go func() {
 			appWidget.ImageButton.Disable()
+			appWidget.updateButtonStatus(app.Downloading)
 			defer appWidget.ImageButton.Enable()
 
 			appWidget.progressBar.Show()
@@ -201,6 +205,7 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 			}
 
 			dialog.ShowInformation("Success", appWidget.installerConfig.Name+" download complete", appWidget.parentWidget)
+			appWidget.updateButtonStatus(app.CompleteDownload)
 		}()
 	}
 
@@ -244,8 +249,8 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 	pythonProgress.Hide()
 	nodeProgress.Hide()
 	goProgress.Hide()
-	notionProgress.Hide()
 	dockerProgress.Hide()
+	notionProgress.Hide()
 	postmanProgress.Hide()
 
 	pythonImgBtn := widget.NewButtonWithIcon("Python", pythonIcon, func() {})
@@ -305,6 +310,18 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 	return appConfig.Container
 }
 
+func (appWidget *appWidget) updateButtonStatus(appStatus app.AppStatus) {
+	switch appStatus {
+	case app.None, app.Downloading, app.PartialDownloaded:
+		appWidget.ImageButton.Importance = widget.MediumImportance
+	case app.CompleteDownload:
+		appWidget.progressBar.Hide()
+		appWidget.ImageButton.Importance = widget.HighImportance
+	case app.OpenInstaller:
+		appWidget.ImageButton.Importance = widget.LowImportance
+	}
+}
+
 func (appConfig *AppConfig) setDirectory(win fyne.Window, pathLabel *widget.Label) func() {
 	return func() {
 		dialog.ShowFolderOpen(func(uri fyne.ListableURI, err error) {
@@ -322,6 +339,7 @@ func (appConfig *AppConfig) setDirectory(win fyne.Window, pathLabel *widget.Labe
 			// refresh new download path
 			for _, appWidget := range appConfig.AppWidgets {
 				appWidget.setEventListener(appConfig)
+				appWidget.updateButtonStatus(app.None)
 			}
 		}, win)
 	}
