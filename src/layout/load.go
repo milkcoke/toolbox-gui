@@ -297,7 +297,7 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 	)
 
 	appConfig.AppWidgets = []*appWidget{
-		nodeAppWidget, goAppWidget, notionAppWidget, dockerAppWidget,
+		pythonAppWidget, nodeAppWidget, goAppWidget, dockerAppWidget, postmanAppWidget, notionAppWidget,
 	}
 
 	appConfig.Container = vboxContainer
