@@ -34,15 +34,15 @@ var NodeInstaller = InstallerConfig{
 	".pkg",
 	// pkg supports both intel, apple-silicon
 	// It contains a universal binary that includes both architectures.
-	"https://nodejs.org/dist/v18.14.2/node-v18.14.2.pkg",
-	"v18.14.2",
+	"https://nodejs.org/dist/v18.16.0/node-v18.16.0.pkg",
+	"v18.16.0",
 }
 
 var PostmanInstaller = InstallerConfig{
 	"Postman",
 	".zip",
 	"https://dl.pstmn.io/download/latest/osx_arm64",
-	"10.10.8",
+	"10.11.1",
 }
 
 var PythonInstaller = InstallerConfig{

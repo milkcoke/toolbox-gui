@@ -32,8 +32,8 @@ var NotionInstaller = InstallerConfig{
 var NodeInstaller = InstallerConfig{
 	"Nodejs",
 	".msi",
-	"https://nodejs.org/dist/v18.15.0/node-v18.15.0-x64.msi",
-	"v18.15.0",
+	"https://nodejs.org/dist/v18.16.0/node-v18.16.0-x64.msi",
+	"v18.16.0",
 }
 
 var PostmanInstaller = InstallerConfig{
