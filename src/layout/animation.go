@@ -3,9 +3,7 @@ package layout
 import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
-	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
-	"fyne.io/fyne/v2/widget"
 	"image/color"
 	"time"
 )
@@ -14,24 +12,12 @@ type AnimationApp struct {
 	App fyne.App
 }
 
-func (appConfig *AnimationApp) GenerateProgressBar() {
-	var app = appConfig.App
-
-	// 여기서부터
-	myWindow := app.NewWindow("ProgressBar Widget")
-
-	progress := widget.NewProgressBar()
-	//infinite := widget.NewProgressBarInfinite()
-	go func() {
-		for i := 0.0; i <= 1.0; i += 0.1 {
-			time.Sleep(time.Millisecond * 250)
-			progress.SetValue(i)
-		}
-	}()
-	myWindow.SetContent(container.NewCenter(progress))
-	myWindow.Show()
-
-	app.Settings().SetTheme(&CustomTheme{})
+// Only left-up and right-down allowed not shaking.
+func (appWidget *appWidget) startShakeOnImageButton() {
+	animation := canvas.NewPositionAnimation(fyne.NewPos(-5, -5), fyne.NewPos(5, 5), time.Millisecond*100, appWidget.ImageButton.Move)
+	animation.AutoReverse = true
+	animation.RepeatCount = 20
+	animation.Start()
 }
 
 func (appConfig *AppConfig) GenerateAnimation() (animationContainer *fyne.Container) {
