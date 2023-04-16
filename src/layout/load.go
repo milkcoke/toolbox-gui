@@ -144,10 +144,6 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 		if _, err := os.Stat(fileFullPath); err == nil {
 			readFileFD, err := os.Open(fileFullPath)
 
-			if err != nil {
-				log.Fatalln(err)
-			}
-
 			fileInfo, err := readFileFD.Stat()
 			if err != nil {
 				log.Fatalln(err)
