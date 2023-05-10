@@ -49,3 +49,25 @@ var PythonInstaller = InstallerConfig{
 	"https://www.python.org/ftp/python/3.11.3/python-3.11.3-amd64.exe",
 	"3.11.3",
 }
+
+//TODO : mac git installer is different way
+//var GitInstaller = InstallerConfig{
+//	"Git",
+//	".exe",
+//	"https://github.com/git-for-windows/git/releases/download/v2.40.1.windows.1/Git-2.40.1-64-bit.exe",
+//	"2.40.1",
+//}
+
+var VSCodeInstaller = InstallerConfig{
+	"VisualStudioCode",
+	".exe",
+	"https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user",
+	"1.78.1",
+}
+
+var SlackInstaller = InstallerConfig{
+	"Slack",
+	".exe",
+	"https://downloads.slack-edge.com/releases/windows/4.32.122/prod/x64/SlackSetup.exe",
+	"4.32.122",
+}

@@ -19,3 +19,9 @@ var PostmanBytes []byte
 
 //go:embed notion_logo.svg
 var NotionBytes []byte
+
+//go:embed slack_logo.svg
+var SlackBytes []byte
+
+//go:embed visual_studio_code_logo.svg
+var VSCodeBytes []byte

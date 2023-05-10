@@ -234,7 +234,8 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 	dockerIcon := fyne.NewStaticResource("Docker", assets.DockerBytes)
 	postmanIcon := fyne.NewStaticResource("Postman", assets.PostmanBytes)
 	notionIcon := fyne.NewStaticResource("Notion", assets.NotionBytes)
-
+	vsCodeIcon := fyne.NewStaticResource("Visual Studio Code", assets.VSCodeBytes)
+	slackIcon := fyne.NewStaticResource("Slack", assets.SlackBytes)
 	/**
 	 * button, space is not resized in layout and container
 	 * since it's inherited from container or layout
@@ -245,6 +246,8 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 	dockerProgress := widget.NewProgressBar()
 	postmanProgress := widget.NewProgressBar()
 	notionProgress := widget.NewProgressBar()
+	vsCodeProgress := widget.NewProgressBar()
+	slackProgress := widget.NewProgressBar()
 
 	pythonProgress.Hide()
 	nodeProgress.Hide()
@@ -252,6 +255,8 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 	dockerProgress.Hide()
 	notionProgress.Hide()
 	postmanProgress.Hide()
+	vsCodeProgress.Hide()
+	slackProgress.Hide()
 
 	pythonImgBtn := widget.NewButtonWithIcon("Python", pythonIcon, func() {})
 	nodeImgBtn := widget.NewButtonWithIcon("Node.js", nodeIcon, func() {})
@@ -259,6 +264,8 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 	dockerImgBtn := widget.NewButtonWithIcon("Docker", dockerIcon, func() {})
 	postmanImgBtn := widget.NewButtonWithIcon("Postman", postmanIcon, func() {})
 	notionImgBtn := widget.NewButtonWithIcon("Notion", notionIcon, func() {})
+	vsCodeImgBtn := widget.NewButtonWithIcon("Visual Studio Code", vsCodeIcon, func() {})
+	slackImgBtn := widget.NewButtonWithIcon("Slack", slackIcon, func() {})
 
 	pythonAppWidget := &appWidget{
 		pythonImgBtn, app.PythonInstaller, pythonProgress, win,
@@ -278,6 +285,12 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 	notionAppWidget := &appWidget{
 		notionImgBtn, app.NotionInstaller, notionProgress, win,
 	}
+	vsCodeAppWidget := &appWidget{
+		vsCodeImgBtn, app.VSCodeInstaller, vsCodeProgress, win,
+	}
+	slackAppWidget := &appWidget{
+		slackImgBtn, app.SlackInstaller, slackProgress, win,
+	}
 
 	pythonAppWidget.setEventListener(appConfig)
 	nodeAppWidget.setEventListener(appConfig)
@@ -285,6 +298,8 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 	dockerAppWidget.setEventListener(appConfig)
 	postmanAppWidget.setEventListener(appConfig)
 	notionAppWidget.setEventListener(appConfig)
+	vsCodeAppWidget.setEventListener(appConfig)
+	slackAppWidget.setEventListener(appConfig)
 
 	buttonsContainer := container.New(layout.NewGridWrapLayout(fyne.NewSize(391, 240)),
 		container.NewMax(pythonImgBtn, container.NewCenter(pythonProgress)),
@@ -293,6 +308,8 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 		container.NewMax(dockerImgBtn, container.NewCenter(dockerProgress)),
 		container.NewMax(postmanImgBtn, container.NewCenter(postmanProgress)),
 		container.NewMax(notionImgBtn, container.NewCenter(notionProgress)),
+		container.NewMax(vsCodeImgBtn, container.NewCenter(vsCodeProgress)),
+		container.NewMax(slackImgBtn, container.NewCenter(slackProgress)),
 	)
 
 	vboxContainer := container.NewVBox(
@@ -302,7 +319,7 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 	)
 
 	appConfig.AppWidgets = []*appWidget{
-		pythonAppWidget, nodeAppWidget, goAppWidget, dockerAppWidget, postmanAppWidget, notionAppWidget,
+		pythonAppWidget, nodeAppWidget, goAppWidget, dockerAppWidget, postmanAppWidget, notionAppWidget, vsCodeAppWidget, slackAppWidget,
 	}
 
 	appConfig.Container = vboxContainer

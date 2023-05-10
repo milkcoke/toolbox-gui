@@ -53,3 +53,17 @@ var PythonInstaller = InstallerConfig{
 	"https://www.python.org/ftp/python/3.11.3/python-3.11.3-macos11.pkg",
 	"3.11.3",
 }
+
+var VSCodeInstaller = InstallerConfig{
+	"VisualStudioCode",
+	".zip",
+	"https://code.visualstudio.com/sha/download?build=stable&os=darwin",
+	"1.78.1",
+}
+
+var SlackInstaller = InstallerConfig{
+	"Slack",
+	".dmg",
+	"https://downloads.slack-edge.com/releases/macos/4.32.122/prod/universal/Slack-4.32.122-macOS.dmg",
+	"4.32.122",
+}
