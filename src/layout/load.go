@@ -312,10 +312,13 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 		container.NewMax(slackImgBtn, container.NewCenter(slackProgress)),
 	)
 
+	scrollContainer := container.NewVScroll(buttonsContainer)
+	scrollContainer.SetMinSize(fyne.Size{Width: 400, Height: 800})
+
 	vboxContainer := container.NewVBox(
 		container.NewHBox(downloadDirPathBtn, pathLabel),
 		container.NewBorder(canvas.NewLine(color.White), nil, nil, nil),
-		buttonsContainer,
+		scrollContainer,
 	)
 
 	appConfig.AppWidgets = []*appWidget{
