@@ -16,6 +16,7 @@ package
 
 # package file
 *.appx
+*.msix
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
@@ -30,7 +31,6 @@ package
 .vs
 bin
 obj
-*.appx
 *.csproj
 *.sln
 *.cs
@@ -44,3 +44,5 @@ Makefile
 # certificate
 *.p12
 *.pfx
+*.crt
+*.key
