@@ -9,7 +9,7 @@ import (
 func main() {
 	app := app.New()
 
-	win := app.NewWindow("Dev Toolbox")
+	win := app.NewWindow("Toolbox Dev")
 
 	var config = layout.Config
 	var container = config.LoadImageButtons(win)
