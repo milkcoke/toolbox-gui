@@ -6,7 +6,6 @@ require (
 	fyne.io/fyne/v2 v2.4.4
 	github.com/imroc/req/v3 v3.42.3
 	github.com/inhies/go-bytesize v0.0.0-20220417184213-4913239db9cf
-	golang.org/x/sys v0.17.0
 )
 
 require (
@@ -48,6 +47,7 @@ require (
 	golang.org/x/mobile v0.0.0-20240213143359-d1f7d3436075 // indirect
 	golang.org/x/mod v0.15.0 // indirect
 	golang.org/x/net v0.21.0 // indirect
+	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/tools v0.18.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
