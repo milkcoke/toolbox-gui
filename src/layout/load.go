@@ -211,18 +211,6 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 
 }
 
-func (appConfig *AppConfig) MakeUI() (*widget.Entry, *widget.RichText) {
-	edit := widget.NewMultiLineEntry()
-	preview := widget.NewRichTextFromMarkdown("기모링딩동")
-
-	appConfig.EditWidget = edit
-	appConfig.PreviewWidget = preview
-
-	edit.OnChanged = preview.ParseMarkdown
-
-	return edit, preview
-}
-
 func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *fyne.Container) {
 	pathLabel := widget.NewLabel("Download Path")
 	appConfig.initDownloadDir(pathLabel)
