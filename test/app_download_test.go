@@ -146,6 +146,46 @@ func downloadInstaller(installerCfg app.InstallerConfig, wg *sync.WaitGroup) {
 	}
 }
 
+func isValidInstallerConfig(installerCfg *app.InstallerConfig, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	headerRes, err := req.R().Head(installerCfg.Url)
+	if err != nil {
+		log.Println("Invalid request")
+		log.Fatalln(err)
+	}
+
+	contentLength := headerRes.GetHeader("Content-Length")
+	fullFileLength, err := strconv.ParseInt(contentLength, 10, 64)
+	if err != nil {
+		log.Fatalln("Failed to parsing content Length : ", err)
+	}
+
+	fileSize := bytesize.New(float64(fullFileLength))
+	if fileSize < bytesize.MB {
+		log.Fatalln(installerCfg.Name, "installer has too small size", fileSize)
+	}
+
+	log.Println(installerCfg.Name, "installer size: ", fileSize)
+}
+
+func TestAllInstallerConfig(t *testing.T) {
+	installerConfigList := []*app.InstallerConfig{
+		&app.GoInstaller, &app.DockerInstaller,
+		&app.NotionInstaller, &app.NodeInstaller,
+		&app.PostmanInstaller, &app.PythonInstaller,
+		&app.VSCodeInstaller, &app.SlackInstaller,
+	}
+	waitGroup := &sync.WaitGroup{}
+	waitGroup.Add(len(installerConfigList))
+
+	for _, installerCfg := range installerConfigList {
+		go isValidInstallerConfig(installerCfg, waitGroup)
+	}
+
+	waitGroup.Wait()
+}
+
 func Test_All_App(t *testing.T) {
 	waitGroup := &sync.WaitGroup{}
 	waitGroup.Add(8)
