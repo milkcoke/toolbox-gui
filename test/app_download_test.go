@@ -1,9 +1,10 @@
-package app
+package test
 
 import (
 	"fmt"
 	"github.com/imroc/req/v3"
 	"github.com/inhies/go-bytesize"
+	"github.com/milkcoke/toolbox-gui/src/app"
 	"io"
 	"log"
 	"net/http"
@@ -16,7 +17,7 @@ import (
 
 // asyncRetryDownload
 // This is called only when file not-exist or exist but partial.
-func asyncRetryDownload(readFileFD *os.File, installerCfg InstallerConfig, fullFileLength int64, wg *sync.WaitGroup) {
+func _asyncRetryDownload(readFileFD *os.File, installerCfg *app.InstallerConfig, fullFileLength int64, wg *sync.WaitGroup) {
 	defer wg.Done() // decrement dynamically
 
 	// Check file existence
@@ -56,7 +57,7 @@ func asyncRetryDownload(readFileFD *os.File, installerCfg InstallerConfig, fullF
 		log.Println("Http request fail : ", err)
 		time.Sleep(2 * time.Second)
 		wg.Add(1)
-		go asyncRetryDownload(readFileFD, installerCfg, fullFileLength, wg)
+		go _asyncRetryDownload(readFileFD, installerCfg, fullFileLength, wg)
 		return
 	}
 
@@ -64,7 +65,7 @@ func asyncRetryDownload(readFileFD *os.File, installerCfg InstallerConfig, fullF
 		log.Println("Error occurs appending stream from response .. ", err)
 		time.Sleep(2 * time.Second)
 		wg.Add(1)
-		go asyncRetryDownload(readFileFD, installerCfg, fullFileLength, wg)
+		go _asyncRetryDownload(readFileFD, installerCfg, fullFileLength, wg)
 		return
 	}
 
@@ -72,7 +73,7 @@ func asyncRetryDownload(readFileFD *os.File, installerCfg InstallerConfig, fullF
 	log.Println("Success to download complete: ", installerCfg.Name, "after retying")
 }
 
-func downloadInstaller(installerCfg InstallerConfig, wg *sync.WaitGroup) {
+func downloadInstaller(installerCfg *app.InstallerConfig, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	// 헤더로 총 파일 크기 검사
@@ -88,8 +89,8 @@ func downloadInstaller(installerCfg InstallerConfig, wg *sync.WaitGroup) {
 		log.Fatal("Failed to parsing content Length : ", err)
 	}
 
-	// 이미 파일이 있는 경우
 	var targetFile = installerCfg.Name + installerCfg.Ext
+	// 이미 파일이 있는 경우
 	if _, err := os.Stat(targetFile); err == nil {
 		readFileFD, err := os.Open(targetFile)
 		// 여기서 바로 닫아버리면 다음 재 다운로드 시도에서 읽다가 도중에 끊김..
@@ -112,7 +113,7 @@ func downloadInstaller(installerCfg InstallerConfig, wg *sync.WaitGroup) {
 		}
 
 		wg.Add(1)
-		go asyncRetryDownload(readFileFD, installerCfg, fullFileLength, wg)
+		go _asyncRetryDownload(readFileFD, installerCfg, fullFileLength, wg)
 		return
 	} else {
 		// 최초 요청 케이스
@@ -130,7 +131,7 @@ func downloadInstaller(installerCfg InstallerConfig, wg *sync.WaitGroup) {
 			}
 
 			wg.Add(1)
-			go asyncRetryDownload(readFileFD, installerCfg, fullFileLength, wg)
+			go _asyncRetryDownload(readFileFD, installerCfg, fullFileLength, wg)
 			return
 		}
 
@@ -145,15 +146,59 @@ func downloadInstaller(installerCfg InstallerConfig, wg *sync.WaitGroup) {
 	}
 }
 
-func Test_All_App(t *testing.T) {
-	waitGroup := &sync.WaitGroup{}
-	waitGroup.Add(2)
+func isValidInstallerConfig(installerCfg *app.InstallerConfig, wg *sync.WaitGroup) {
+	defer wg.Done()
 
-	//go downloadInstaller(DockerInstaller, waitGroup)
-	//go downloadInstaller(NotionInstaller, waitGroup)
-	//go downloadInstaller(NodeInstaller, waitGroup)
-	//go downloadInstaller(GoInstaller, waitGroup)
-	go downloadInstaller(PostmanInstaller, waitGroup)
-	go downloadInstaller(PythonInstaller, waitGroup)
+	headerRes, err := req.R().Head(installerCfg.Url)
+	if err != nil {
+		log.Println("Invalid request")
+		log.Fatalln(err)
+	}
+
+	contentLength := headerRes.GetHeader("Content-Length")
+	fullFileLength, err := strconv.ParseInt(contentLength, 10, 64)
+	if err != nil {
+		log.Fatalln("Failed to parsing content Length : ", err)
+	}
+
+	fileSize := bytesize.New(float64(fullFileLength))
+	if fileSize < bytesize.MB {
+		log.Fatalln(installerCfg.Name, "installer has too small size", fileSize)
+	}
+
+	log.Println(installerCfg.Name, "installer size: ", fileSize)
+}
+
+func TestAllInstallerConfig(t *testing.T) {
+	installerConfigList := []*app.InstallerConfig{
+		&app.GoInstaller, &app.DockerInstaller,
+		&app.NotionInstaller, &app.NodeInstaller,
+		&app.PostmanInstaller, &app.PythonInstaller,
+		&app.VSCodeInstaller, &app.SlackInstaller,
+	}
+	waitGroup := &sync.WaitGroup{}
+	waitGroup.Add(len(installerConfigList))
+
+	for _, installerCfg := range installerConfigList {
+		go isValidInstallerConfig(installerCfg, waitGroup)
+	}
+
+	waitGroup.Wait()
+}
+
+func TestDownloadAllInstaller(t *testing.T) {
+	installerConfigList := []*app.InstallerConfig{
+		&app.GoInstaller, &app.DockerInstaller,
+		&app.NotionInstaller, &app.NodeInstaller,
+		&app.PostmanInstaller, &app.PythonInstaller,
+		&app.VSCodeInstaller, &app.SlackInstaller,
+	}
+	waitGroup := &sync.WaitGroup{}
+	waitGroup.Add(len(installerConfigList))
+
+	for _, installerCfg := range installerConfigList {
+		go downloadInstaller(installerCfg, waitGroup)
+	}
+
 	waitGroup.Wait()
 }

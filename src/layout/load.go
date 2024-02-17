@@ -11,7 +11,7 @@ import (
 	"github.com/imroc/req/v3"
 	"github.com/inhies/go-bytesize"
 	"github.com/milkcoke/toolbox-gui/src/app"
-	assets "github.com/milkcoke/toolbox-gui/src/assets"
+	"github.com/milkcoke/toolbox-gui/src/assets"
 	filehandle "github.com/milkcoke/toolbox-gui/src/file"
 	"image/color"
 	"log"
@@ -211,18 +211,6 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 
 }
 
-func (appConfig *AppConfig) MakeUI() (*widget.Entry, *widget.RichText) {
-	edit := widget.NewMultiLineEntry()
-	preview := widget.NewRichTextFromMarkdown("기모링딩동")
-
-	appConfig.EditWidget = edit
-	appConfig.PreviewWidget = preview
-
-	edit.OnChanged = preview.ParseMarkdown
-
-	return edit, preview
-}
-
 func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *fyne.Container) {
 	pathLabel := widget.NewLabel("Download Path")
 	appConfig.initDownloadDir(pathLabel)
@@ -302,14 +290,14 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 	slackAppWidget.setEventListener(appConfig)
 
 	buttonsContainer := container.New(layout.NewGridWrapLayout(fyne.NewSize(391, 240)),
-		container.NewMax(pythonImgBtn, container.NewCenter(pythonProgress)),
-		container.NewMax(nodeImgBtn, container.NewCenter(nodeProgress)),
-		container.NewMax(goImgBtn, container.NewCenter(goProgress)),
-		container.NewMax(dockerImgBtn, container.NewCenter(dockerProgress)),
-		container.NewMax(postmanImgBtn, container.NewCenter(postmanProgress)),
-		container.NewMax(notionImgBtn, container.NewCenter(notionProgress)),
-		container.NewMax(vsCodeImgBtn, container.NewCenter(vsCodeProgress)),
-		container.NewMax(slackImgBtn, container.NewCenter(slackProgress)),
+		container.NewStack(pythonImgBtn, container.NewCenter(pythonProgress)),
+		container.NewStack(nodeImgBtn, container.NewCenter(nodeProgress)),
+		container.NewStack(goImgBtn, container.NewCenter(goProgress)),
+		container.NewStack(dockerImgBtn, container.NewCenter(dockerProgress)),
+		container.NewStack(postmanImgBtn, container.NewCenter(postmanProgress)),
+		container.NewStack(notionImgBtn, container.NewCenter(notionProgress)),
+		container.NewStack(vsCodeImgBtn, container.NewCenter(vsCodeProgress)),
+		container.NewStack(slackImgBtn, container.NewCenter(slackProgress)),
 	)
 
 	scrollContainer := container.NewVScroll(buttonsContainer)
