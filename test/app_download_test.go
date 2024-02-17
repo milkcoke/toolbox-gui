@@ -17,7 +17,7 @@ import (
 
 // asyncRetryDownload
 // This is called only when file not-exist or exist but partial.
-func _asyncRetryDownload(readFileFD *os.File, installerCfg app.InstallerConfig, fullFileLength int64, wg *sync.WaitGroup) {
+func _asyncRetryDownload(readFileFD *os.File, installerCfg *app.InstallerConfig, fullFileLength int64, wg *sync.WaitGroup) {
 	defer wg.Done() // decrement dynamically
 
 	// Check file existence
@@ -73,7 +73,7 @@ func _asyncRetryDownload(readFileFD *os.File, installerCfg app.InstallerConfig, 
 	log.Println("Success to download complete: ", installerCfg.Name, "after retying")
 }
 
-func downloadInstaller(installerCfg app.InstallerConfig, wg *sync.WaitGroup) {
+func downloadInstaller(installerCfg *app.InstallerConfig, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	// 헤더로 총 파일 크기 검사
@@ -186,15 +186,19 @@ func TestAllInstallerConfig(t *testing.T) {
 	waitGroup.Wait()
 }
 
-func Test_All_App(t *testing.T) {
+func TestDownloadAllInstaller(t *testing.T) {
+	installerConfigList := []*app.InstallerConfig{
+		&app.GoInstaller, &app.DockerInstaller,
+		&app.NotionInstaller, &app.NodeInstaller,
+		&app.PostmanInstaller, &app.PythonInstaller,
+		&app.VSCodeInstaller, &app.SlackInstaller,
+	}
 	waitGroup := &sync.WaitGroup{}
-	waitGroup.Add(8)
+	waitGroup.Add(len(installerConfigList))
 
-	go downloadInstaller(app.DockerInstaller, waitGroup)
-	go downloadInstaller(app.NotionInstaller, waitGroup)
-	go downloadInstaller(app.NodeInstaller, waitGroup)
-	go downloadInstaller(app.GoInstaller, waitGroup)
-	go downloadInstaller(app.PostmanInstaller, waitGroup)
-	go downloadInstaller(app.PythonInstaller, waitGroup)
+	for _, installerCfg := range installerConfigList {
+		go downloadInstaller(installerCfg, waitGroup)
+	}
+
 	waitGroup.Wait()
 }
