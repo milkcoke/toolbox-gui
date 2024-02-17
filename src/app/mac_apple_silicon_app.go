@@ -42,7 +42,7 @@ var PostmanInstaller = InstallerConfig{
 	"Postman",
 	".zip",
 	"https://dl.pstmn.io/download/latest/osx_arm64",
-	"10.22",
+	"10.23",
 }
 
 var PythonInstaller = InstallerConfig{
