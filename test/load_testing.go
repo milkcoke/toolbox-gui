@@ -1,15 +1,7 @@
-package layout
+package test
 
 import (
 	"fmt"
-	"image/color"
-	"log"
-	"net/http"
-	"os"
-	"path/filepath"
-	"strconv"
-	"time"
-
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
@@ -19,8 +11,15 @@ import (
 	"github.com/imroc/req/v3"
 	"github.com/inhies/go-bytesize"
 	"github.com/milkcoke/toolbox-gui/src/app"
-	"github.com/milkcoke/toolbox-gui/src/assets"
+	assets "github.com/milkcoke/toolbox-gui/src/assets"
 	filehandle "github.com/milkcoke/toolbox-gui/src/file"
+	"image/color"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strconv"
+	"time"
 )
 
 type AppConfig struct {
@@ -133,6 +132,8 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 		defer appWidget.progressBar.Hide()
 		// return type func() 로 하면 method 로도 eventListener 등록할 수 있음.
 
+		var fileFullPath = filepath.Join(appConfig.DownloadPath, appWidget.installerConfig.Name+appWidget.installerConfig.Ext)
+
 		// C: Global client
 		// Which have corresponding global wrappers
 		// Just treat the package name req as Client to test, set up the Client without create any Client explicitly.
@@ -140,16 +141,18 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 		// It affects on global request created by req.R()
 		client := req.C().SetOutputDirectory(appConfig.DownloadPath)
 
-		var fileFullPath = filepath.Join(appConfig.DownloadPath, appWidget.installerConfig.Name+appWidget.installerConfig.Ext)
-
 		// Already file exists
 		if _, err := os.Stat(fileFullPath); err == nil {
 			readFileFD, err := os.Open(fileFullPath)
+			if err != nil {
+				log.Fatalln(err)
+			}
 
 			fileInfo, err := readFileFD.Stat()
 			if err != nil {
 				log.Fatalln(err)
 			}
+
 			log.Println("전체 파일 길이: ", bytesize.New(float64(fullFileSize)))
 			log.Println("현재 파일 크기: ", bytesize.New(float64(fileInfo.Size())))
 
@@ -163,7 +166,6 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 				readFileFD.Close()
 				return
 			} else {
-				appWidget.updateButtonStatus(app.PartialDownloaded)
 				go asyncRetryDownload(readFileFD, appWidget, fullFileSize)
 				return
 			}
@@ -178,7 +180,6 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 
 		go func() {
 			appWidget.ImageButton.Disable()
-			appWidget.updateButtonStatus(app.Downloading)
 			defer appWidget.ImageButton.Enable()
 
 			appWidget.progressBar.Show()
@@ -205,11 +206,23 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 				return
 			}
 
+			//TODO: Register MouseIn() hover event
+			//mouseEvent := &desktop.MouseEvent{}
+			//appWidget.ImageButton.MouseIn(mouseEvent)
+
 			dialog.ShowInformation("Success", appWidget.installerConfig.Name+" download complete", appWidget.parentWidget)
 			appWidget.updateButtonStatus(app.CompleteDownload)
 		}()
+
 	}
 
+}
+
+func (appWidget *appWidget) startShakeOnImageButton() {
+	animation := canvas.NewPositionAnimation(fyne.NewPos(-5, -5), fyne.NewPos(5, 5), time.Millisecond*100, appWidget.ImageButton.Move)
+	animation.AutoReverse = true
+	animation.RepeatCount = 20
+	animation.Start()
 }
 
 func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *fyne.Container) {
@@ -221,40 +234,21 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 	nodeIcon := fyne.NewStaticResource("Node.js", assets.NodeBytes)
 	golangIcon := fyne.NewStaticResource("Go", assets.GoBytes)
 	dockerIcon := fyne.NewStaticResource("Docker", assets.DockerBytes)
-	postmanIcon := fyne.NewStaticResource("Postman", assets.PostmanBytes)
-	notionIcon := fyne.NewStaticResource("Notion", assets.NotionBytes)
-	vsCodeIcon := fyne.NewStaticResource("Visual Studio Code", assets.VSCodeBytes)
-	slackIcon := fyne.NewStaticResource("Slack", assets.SlackBytes)
-	/**
-	 * button, space is not resized in layout and container
-	 * since it's inherited from container or layout
-	 */
+
 	pythonProgress := widget.NewProgressBar()
 	nodeProgress := widget.NewProgressBar()
 	goProgress := widget.NewProgressBar()
 	dockerProgress := widget.NewProgressBar()
-	postmanProgress := widget.NewProgressBar()
-	notionProgress := widget.NewProgressBar()
-	vsCodeProgress := widget.NewProgressBar()
-	slackProgress := widget.NewProgressBar()
 
-	pythonProgress.Hide()
-	nodeProgress.Hide()
 	goProgress.Hide()
 	dockerProgress.Hide()
-	notionProgress.Hide()
-	postmanProgress.Hide()
-	vsCodeProgress.Hide()
-	slackProgress.Hide()
+	pythonProgress.Hide()
+	nodeProgress.Hide()
 
 	pythonImgBtn := widget.NewButtonWithIcon("Python", pythonIcon, func() {})
 	nodeImgBtn := widget.NewButtonWithIcon("Node.js", nodeIcon, func() {})
 	goImgBtn := widget.NewButtonWithIcon("Go", golangIcon, func() {})
 	dockerImgBtn := widget.NewButtonWithIcon("Docker", dockerIcon, func() {})
-	postmanImgBtn := widget.NewButtonWithIcon("Postman", postmanIcon, func() {})
-	notionImgBtn := widget.NewButtonWithIcon("Notion", notionIcon, func() {})
-	vsCodeImgBtn := widget.NewButtonWithIcon("Visual Studio Code", vsCodeIcon, func() {})
-	slackImgBtn := widget.NewButtonWithIcon("Slack", slackIcon, func() {})
 
 	pythonAppWidget := &appWidget{
 		pythonImgBtn, app.PythonInstaller, pythonProgress, win,
@@ -268,50 +262,27 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 	dockerAppWidget := &appWidget{
 		dockerImgBtn, app.DockerInstaller, dockerProgress, win,
 	}
-	postmanAppWidget := &appWidget{
-		postmanImgBtn, app.PostmanInstaller, postmanProgress, win,
-	}
-	notionAppWidget := &appWidget{
-		notionImgBtn, app.NotionInstaller, notionProgress, win,
-	}
-	vsCodeAppWidget := &appWidget{
-		vsCodeImgBtn, app.VSCodeInstaller, vsCodeProgress, win,
-	}
-	slackAppWidget := &appWidget{
-		slackImgBtn, app.SlackInstaller, slackProgress, win,
-	}
 
 	pythonAppWidget.setEventListener(appConfig)
 	nodeAppWidget.setEventListener(appConfig)
 	goAppWidget.setEventListener(appConfig)
 	dockerAppWidget.setEventListener(appConfig)
-	postmanAppWidget.setEventListener(appConfig)
-	notionAppWidget.setEventListener(appConfig)
-	vsCodeAppWidget.setEventListener(appConfig)
-	slackAppWidget.setEventListener(appConfig)
 
 	buttonsContainer := container.New(layout.NewGridWrapLayout(fyne.NewSize(391, 240)),
-		container.NewStack(pythonImgBtn, container.NewCenter(pythonProgress)),
-		container.NewStack(nodeImgBtn, container.NewCenter(nodeProgress)),
-		container.NewStack(goImgBtn, container.NewCenter(goProgress)),
-		container.NewStack(dockerImgBtn, container.NewCenter(dockerProgress)),
-		container.NewStack(postmanImgBtn, container.NewCenter(postmanProgress)),
-		container.NewStack(notionImgBtn, container.NewCenter(notionProgress)),
-		container.NewStack(vsCodeImgBtn, container.NewCenter(vsCodeProgress)),
-		container.NewStack(slackImgBtn, container.NewCenter(slackProgress)),
+		container.NewMax(pythonImgBtn, container.NewCenter(pythonProgress)),
+		container.NewMax(nodeImgBtn, container.NewCenter(nodeProgress)),
+		container.NewMax(goImgBtn, container.NewCenter(goProgress)),
+		container.NewMax(dockerImgBtn, container.NewCenter(dockerProgress)),
 	)
-
-	scrollContainer := container.NewVScroll(buttonsContainer)
-	scrollContainer.SetMinSize(fyne.Size{Width: 400, Height: 800})
 
 	vboxContainer := container.NewVBox(
 		container.NewHBox(downloadDirPathBtn, pathLabel),
 		container.NewBorder(canvas.NewLine(color.White), nil, nil, nil),
-		scrollContainer,
+		buttonsContainer,
 	)
 
 	appConfig.AppWidgets = []*appWidget{
-		pythonAppWidget, nodeAppWidget, goAppWidget, dockerAppWidget, postmanAppWidget, notionAppWidget, vsCodeAppWidget, slackAppWidget,
+		pythonAppWidget, nodeAppWidget, goAppWidget, dockerAppWidget,
 	}
 
 	appConfig.Container = vboxContainer
@@ -321,8 +292,10 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 
 func (appWidget *appWidget) updateButtonStatus(appStatus app.AppStatus) {
 	switch appStatus {
-	case app.None, app.Downloading, app.PartialDownloaded:
+	case app.None, app.PartialDownloaded:
 		appWidget.ImageButton.Importance = widget.MediumImportance
+	case app.Downloading:
+		appWidget.ImageButton.Importance = widget.LowImportance
 	case app.CompleteDownload:
 		appWidget.progressBar.Hide()
 		appWidget.ImageButton.Importance = widget.HighImportance
