@@ -2,6 +2,14 @@ package test
 
 import (
 	"fmt"
+	"image/color"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strconv"
+	"time"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
@@ -13,13 +21,6 @@ import (
 	"github.com/milkcoke/toolbox-gui/src/app"
 	assets "github.com/milkcoke/toolbox-gui/src/assets"
 	filehandle "github.com/milkcoke/toolbox-gui/src/file"
-	"image/color"
-	"log"
-	"net/http"
-	"os"
-	"path/filepath"
-	"strconv"
-	"time"
 )
 
 type AppConfig struct {
