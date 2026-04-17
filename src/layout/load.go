@@ -59,8 +59,8 @@ func (appConfig *AppConfig) initDownloadDir(pathLabel *widget.Label) {
 // asyncRetryDownload
 // This is called only when file not-exist or exist but partial.
 func asyncRetryDownload(readFileFD *os.File, appWidget *appWidget, fullFileLength int64) {
-	appWidget.ImageButton.Disable()
-	defer appWidget.ImageButton.Enable()
+	fyne.Do(func() { appWidget.ImageButton.Disable() })
+	defer fyne.Do(func() { appWidget.ImageButton.Enable() })
 	// Check file existence
 	retryFileInfo, err := readFileFD.Stat()
 	if err != nil {
@@ -74,9 +74,10 @@ func asyncRetryDownload(readFileFD *os.File, appWidget *appWidget, fullFileLengt
 	// This is for protecting code for recursive function
 	if fullFileLength == retryFileInfo.Size() {
 		readFileFD.Close()
-		// only this printed when download complete without checking file size
-		dialog.ShowInformation("Success after retrying : ", appWidget.installerConfig.Name+" download complete", appWidget.parentWidget)
-		appWidget.updateButtonStatus(app.CompleteDownload)
+		fyne.Do(func() {
+			dialog.ShowInformation("Success after retrying : ", appWidget.installerConfig.Name+" download complete", appWidget.parentWidget)
+			appWidget.updateButtonStatus(app.CompleteDownload)
+		})
 		return
 	}
 
@@ -85,7 +86,7 @@ func asyncRetryDownload(readFileFD *os.File, appWidget *appWidget, fullFileLengt
 		log.Fatalln("Failed to open readFileFD : ", err)
 	}
 	defer streamFile.Close()
-	appWidget.progressBar.Show()
+	fyne.Do(func() { appWidget.progressBar.Show() })
 
 	callback := func(info req.DownloadInfo) {
 		if info.Response.Response != nil {
@@ -109,8 +110,10 @@ func asyncRetryDownload(readFileFD *os.File, appWidget *appWidget, fullFileLengt
 	}
 
 	readFileFD.Close()
-	dialog.ShowInformation("Success after retrying : ", appWidget.installerConfig.Name+" download complete", appWidget.parentWidget)
-	appWidget.updateButtonStatus(app.CompleteDownload)
+	fyne.Do(func() {
+		dialog.ShowInformation("Success after retrying : ", appWidget.installerConfig.Name+" download complete", appWidget.parentWidget)
+		appWidget.updateButtonStatus(app.CompleteDownload)
+	})
 }
 
 func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
@@ -119,6 +122,7 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 	headerRes, err := req.R().Head(appWidget.installerConfig.Url)
 	if err != nil {
 		log.Println("Failed to request head ", err)
+		return
 	}
 	contentLength := headerRes.GetHeader("Content-Length")
 	fullFileSize, err := strconv.ParseInt(contentLength, 10, 64)
@@ -129,15 +133,6 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 	appWidget.ImageButton.OnTapped = func() {
 		appWidget.ImageButton.Disable()
 
-		defer appWidget.ImageButton.Enable()
-		defer appWidget.progressBar.Hide()
-		// return type func() 로 하면 method 로도 eventListener 등록할 수 있음.
-
-		// C: Global client
-		// Which have corresponding global wrappers
-		// Just treat the package name req as Client to test, set up the Client without create any Client explicitly.
-		// So don't use req.C() not for global configuration.
-		// It affects on global request created by req.R()
 		client := req.C().SetOutputDirectory(appConfig.DownloadPath)
 
 		var fileFullPath = filepath.Join(appConfig.DownloadPath, appWidget.installerConfig.Name+appWidget.installerConfig.Ext)
@@ -161,6 +156,7 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 				}
 				appWidget.updateButtonStatus(app.OpenInstaller)
 				readFileFD.Close()
+				appWidget.ImageButton.Enable()
 				return
 			} else {
 				appWidget.updateButtonStatus(app.PartialDownloaded)
@@ -177,11 +173,15 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 		}
 
 		go func() {
-			appWidget.ImageButton.Disable()
-			appWidget.updateButtonStatus(app.Downloading)
-			defer appWidget.ImageButton.Enable()
+			fyne.Do(func() {
+				appWidget.updateButtonStatus(app.Downloading)
+				appWidget.progressBar.Show()
+			})
+			defer fyne.Do(func() {
+				appWidget.ImageButton.Enable()
+				appWidget.progressBar.Hide()
+			})
 
-			appWidget.progressBar.Show()
 			res, err := client.R().
 				SetDownloadCallbackWithInterval(callback, 300*time.Millisecond).
 				SetOutputFile(appWidget.installerConfig.Name + appWidget.installerConfig.Ext).
@@ -201,12 +201,16 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 			// 요청 응답 코드가 다른 경우 그냥 중단.
 			if res.GetStatusCode() != http.StatusOK {
 				log.Printf("Status code : %d\n", res.GetStatusCode())
-				dialog.ShowInformation("Error", appWidget.installerConfig.Name+" download failed", appWidget.parentWidget)
+				fyne.Do(func() {
+					dialog.ShowInformation("Error", appWidget.installerConfig.Name+" download failed", appWidget.parentWidget)
+				})
 				return
 			}
 
-			dialog.ShowInformation("Success", appWidget.installerConfig.Name+" download complete", appWidget.parentWidget)
-			appWidget.updateButtonStatus(app.CompleteDownload)
+			fyne.Do(func() {
+				dialog.ShowInformation("Success", appWidget.installerConfig.Name+" download complete", appWidget.parentWidget)
+				appWidget.updateButtonStatus(app.CompleteDownload)
+			})
 		}()
 	}
 
