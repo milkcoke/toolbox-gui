@@ -90,7 +90,9 @@ func asyncRetryDownload(readFileFD *os.File, appWidget *appWidget, fullFileLengt
 
 	callback := func(info req.DownloadInfo) {
 		if info.Response.Response != nil {
-			appWidget.progressBar.SetValue(float64(info.DownloadedSize) / float64(info.Response.ContentLength))
+			fyne.Do(func() {
+				appWidget.progressBar.SetValue(float64(info.DownloadedSize) / float64(info.Response.ContentLength))
+			})
 		}
 	}
 
@@ -168,7 +170,9 @@ func (appWidget *appWidget) setEventListener(appConfig *AppConfig) {
 		// First download request
 		callback := func(info req.DownloadInfo) {
 			if info.Response.Response != nil {
-				appWidget.progressBar.SetValue(float64(info.DownloadedSize) / float64(info.Response.ContentLength))
+				fyne.Do(func() {
+					appWidget.progressBar.SetValue(float64(info.DownloadedSize) / float64(info.Response.ContentLength))
+				})
 			}
 		}
 
