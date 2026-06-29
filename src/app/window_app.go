@@ -12,8 +12,8 @@ type InstallerConfig struct {
 var GoInstaller = InstallerConfig{
 	"Go",
 	".msi",
-	"https://go.dev/dl/go1.22.0.windows-amd64.msi",
-	"1.22.0",
+	"https://go.dev/dl/go1.26.4.windows-amd64.msi",
+	"1.26.4",
 }
 var DockerInstaller = InstallerConfig{
 	"Docker",
@@ -32,8 +32,8 @@ var NotionInstaller = InstallerConfig{
 var NodeInstaller = InstallerConfig{
 	"Nodejs",
 	".msi",
-	"https://nodejs.org/dist/v20.11.1/node-v20.11.1-x64.msi",
-	"v20.11.1",
+	"https://nodejs.org/dist/v24.15.0/node-v24.15.0-x64.msi",
+	"v24.15.0",
 }
 
 var PostmanInstaller = InstallerConfig{
@@ -46,8 +46,8 @@ var PostmanInstaller = InstallerConfig{
 var PythonInstaller = InstallerConfig{
 	"Python",
 	".exe",
-	"https://www.python.org/ftp/python/3.12.2/python-3.12.2-amd64.exe",
-	"3.12.2",
+	"https://www.python.org/ftp/python/3.14.6/python-3.14.6-amd64.exe",
+	"3.14.6",
 }
 
 //TODO : mac git installer is different way

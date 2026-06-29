@@ -12,8 +12,8 @@ type InstallerConfig struct {
 var GoInstaller = InstallerConfig{
 	"Go",
 	".pkg",
-	"https://go.dev/dl/go1.25.6.darwin-arm64.pkg",
-	"1.26.2",
+	"https://go.dev/dl/go1.26.4.darwin-arm64.pkg",
+	"1.26.4",
 }
 var DockerInstaller = InstallerConfig{
 	"Docker",
@@ -48,8 +48,8 @@ var PostmanInstaller = InstallerConfig{
 var PythonInstaller = InstallerConfig{
 	"Python",
 	".pkg",
-	"https://www.python.org/ftp/python/3.14.4/python-3.14.4-macos11.pkg",
-	"3.14.4",
+	"https://www.python.org/ftp/python/3.14.6/python-3.14.6-macos11.pkg",
+	"3.14.6",
 }
 var VSCodeInstaller = InstallerConfig{
 	"VisualStudioCode",
