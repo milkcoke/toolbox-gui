@@ -14,7 +14,6 @@ import (
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
-	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 	"github.com/imroc/req/v3"
 	"github.com/inhies/go-bytesize"
@@ -298,7 +297,7 @@ func (appConfig *AppConfig) LoadImageButtons(win fyne.Window) (buttonContainer *
 	vsCodeAppWidget.setEventListener(appConfig)
 	slackAppWidget.setEventListener(appConfig)
 
-	buttonsContainer := container.New(layout.NewGridWrapLayout(fyne.NewSize(391, 240)),
+	buttonsContainer := container.NewGridWrap(fyne.NewSize(391, 240),
 		container.NewStack(pythonImgBtn, container.NewCenter(pythonProgress)),
 		container.NewStack(nodeImgBtn, container.NewCenter(nodeProgress)),
 		container.NewStack(goImgBtn, container.NewCenter(goProgress)),
